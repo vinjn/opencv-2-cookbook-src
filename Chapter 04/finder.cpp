@@ -36,20 +36,27 @@ int main()
 
 	// Define ROI
 	cv::Mat imageROI= image(cv::Rect(110,260,35,40));
-	cv::rectangle(image, cv::Rect(110,260,35,40),cv::Scalar(0,0,255));
+	cv::rectangle(image, cv::Rect(110,260,35,40), cv::Scalar(0,0,255));
 
 	// Display image
-	cv::namedWindow("Image");
-	cv::imshow("Image",image);
+	cv::namedWindow("Image 1");
+	cv::imshow("Image 1",image);
 
 	// Get the Hue histogram
 	int minSat=65;
 	ColorHistogram hc;
-	cv::MatND colorhist= hc.getHueHistogram(imageROI,minSat);
+	cv::MatND colorhist= hc.getHueHistogram(imageROI, minSat);
 
 	ObjectFinder finder;
 	finder.setHistogram(colorhist);
 	finder.setThreshold(0.2f);
+
+	// Second image
+	image= cv::imread("../baboon3.jpg");
+
+ 	// Display image
+	cv::namedWindow("Image 2");
+	cv::imshow("Image 2",image);
 
 	// Convert to HSV space
 	cv::Mat hsv;
@@ -64,49 +71,14 @@ int main()
 	cv::namedWindow("Saturation");
 	cv::imshow("Saturation",v[1]);
 
-	// Get back-projection of hue histogram
+    // Get back-projection of hue histogram
 	int ch[1]={0};
 	cv::Mat result= finder.find(hsv,0.0f,180.0f,ch,1);
 
 	cv::namedWindow("Result Hue");
 	cv::imshow("Result Hue",result);
 
-	cv::bitwise_and(result,v[1],result);
-	cv::namedWindow("Result Hue and");
-	cv::imshow("Result Hue and",result);
-
-	// Second image
-	image= cv::imread("../baboon3.jpg");
-
-	// Display image
-	cv::namedWindow("Image 2");
-	cv::imshow("Image 2",image);
-
-	// Convert to HSV space
-	cv::cvtColor(image, hsv, CV_BGR2HSV);
-
-	// Split the image
-	cv::split(hsv,v);
-
-	// Eliminate pixels with low saturation
-	cv::threshold(v[1],v[1],minSat,255,cv::THRESH_BINARY);
-	cv::namedWindow("Saturation");
-	cv::imshow("Saturation",v[1]);
-
-	// Get back-projection of hue histogram
-	result= finder.find(hsv,0.0f,180.0f,ch,1);
-
-	cv::namedWindow("Result Hue");
-	cv::imshow("Result Hue",result);
-
 	// Eliminate low stauration pixels
-	cv::bitwise_and(result,v[1],result);
-	cv::namedWindow("Result Hue and");
-	cv::imshow("Result Hue and",result);
-
-	// Get back-projection of hue histogram
-	finder.setThreshold(-1.0f);
-	result= finder.find(hsv,0.0f,180.0f,ch,1);
 	cv::bitwise_and(result,v[1],result);
 	cv::namedWindow("Result Hue and raw");
 	cv::imshow("Result Hue and raw",result);
@@ -125,4 +97,3 @@ int main()
 
 	cv::waitKey();
 	return 0;
-}
