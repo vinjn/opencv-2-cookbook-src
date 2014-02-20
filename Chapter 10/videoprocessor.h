@@ -333,6 +333,10 @@ class VideoProcessor {
 		  if (images.size()!=0) return 0;
 
 	 	  double r= capture.get(CV_CAP_PROP_FPS);
+
+          if (r <= 0)
+            r = 30;
+          
 		  return r; 
 	  }
 
@@ -357,6 +361,12 @@ class VideoProcessor {
 			  char code[4]; } returned;
 
 		  returned.value= static_cast<int>(capture.get(CV_CAP_PROP_FOURCC));
+
+          if (returned.value <= 0){
+
+            returned.value = CV_FOURCC('P','I','M','1');
+            
+          }
 
 		  codec[0]= returned.code[0];
 		  codec[1]= returned.code[1];
