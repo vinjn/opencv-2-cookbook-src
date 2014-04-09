@@ -49,7 +49,7 @@ void MainWindow::on_pushButton_2_clicked()
 
     cv::cvtColor(image,image,CV_BGR2RGB);  // change color channel ordering
     QImage img= QImage((const unsigned char*)(image.data),  // Qt image structure
-                       image.cols,image.rows,QImage::Format_RGB888);
+                       image.cols,image.rows,image.step,QImage::Format_RGB888);
     ui->label->setPixmap(QPixmap::fromImage(img));  // display on label
     ui->label->resize(ui->label->pixmap()->size()); // resize the label to fit the image
 }
