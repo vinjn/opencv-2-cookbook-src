@@ -1,3 +1,6 @@
+# Qmake generated files
+moc_*
+
 # Compiled Object files
 *.slo
 *.lo

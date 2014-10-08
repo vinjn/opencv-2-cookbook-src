@@ -6,7 +6,6 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     colordetector.cpp \
-    colordetector.cpp \
     colorDetectController.cpp
 HEADERS += mainwindow.h \
     colordetector.h \
