@@ -1,66 +1,68 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 2 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 2 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, dugucloud@qq.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 // using .ptr and []
 void colorReduce0(cv::Mat &image, int div=64) {
 
 	  int nl= image.rows; // number of lines
 	  int nc= image.cols * image.channels(); // total number of elements per line
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= image.ptr<uchar>(j);
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
                   data[i]= data[i]/div*div + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
-// using .ptr and * ++ 
+// using .ptr and * ++
 void colorReduce1(cv::Mat &image, int div=64) {
 
 	  int nl= image.rows; // number of lines
 	  int nc= image.cols * image.channels(); // total number of elements per line
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= image.ptr<uchar>(j);
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
 				 *data++= *data/div*div + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
@@ -69,21 +71,21 @@ void colorReduce2(cv::Mat &image, int div=64) {
 
 	  int nl= image.rows; // number of lines
 	  int nc= image.cols * image.channels(); // total number of elements per line
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= image.ptr<uchar>(j);
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-       
+
 			      int v= *data;
                   *data++= v - v%div + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
@@ -95,20 +97,20 @@ void colorReduce3(cv::Mat &image, int div=64) {
 	  int n= static_cast<int>(log(static_cast<double>(div))/log(2.0));
 	  // mask used to round the pixel value
 	  uchar mask= 0xFF<<n; // e.g. for div=16, mask= 0xF0
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= image.ptr<uchar>(j);
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
             *data++= *data&mask + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
@@ -122,21 +124,21 @@ void colorReduce4(cv::Mat &image, int div=64) {
 	  int step= image.step; // effective width
 	  // mask used to round the pixel value
 	  uchar mask= 0xFF<<n; // e.g. for div=16, mask= 0xF0
-              
+
       // get the pointer to the image buffer
 	  uchar *data= image.data;
 
       for (int j=0; j<nl; j++) {
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
             *(data+i)= *data&mask + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
 
             data+= step;  // next line
       }
@@ -149,20 +151,20 @@ void colorReduce5(cv::Mat &image, int div=64) {
 	  int n= static_cast<int>(log(static_cast<double>(div))/log(2.0));
 	  // mask used to round the pixel value
 	  uchar mask= 0xFF<<n; // e.g. for div=16, mask= 0xF0
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= image.ptr<uchar>(j);
 
           for (int i=0; i<image.cols * image.channels(); i++) {
- 
+
             // process each pixel ---------------------
-                 
+
             *data++= *data&mask + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
@@ -174,27 +176,27 @@ void colorReduce6(cv::Mat &image, int div=64) {
 
 	  if (image.isContinuous())  {
 		  // then no padded pixels
-		  nc= nc*nl; 
+		  nc= nc*nl;
 		  nl= 1;  // it is now a 1D array
 	   }
 
 	  int n= static_cast<int>(log(static_cast<double>(div))/log(2.0));
 	  // mask used to round the pixel value
 	  uchar mask= 0xFF<<n; // e.g. for div=16, mask= 0xF0
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= image.ptr<uchar>(j);
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
             *data++= *data&mask + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
@@ -206,34 +208,34 @@ void colorReduce7(cv::Mat &image, int div=64) {
 
 	  if (image.isContinuous())  {
 		  // then no padded pixels
-		  nc= nc*nl; 
+		  nc= nc*nl;
 		  nl= 1;  // it is now a 1D array
 	   }
 
 	  int n= static_cast<int>(log(static_cast<double>(div))/log(2.0));
 	  // mask used to round the pixel value
 	  uchar mask= 0xFF<<n; // e.g. for div=16, mask= 0xF0
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= image.ptr<uchar>(j);
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
             *data++= *data&mask + div/2;
             *data++= *data&mask + div/2;
             *data++= *data&mask + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
 
-// using Mat_ iterator 
+// using Mat_ iterator
 void colorReduce8(cv::Mat &image, int div=64) {
 
 	  // get iterators
@@ -241,7 +243,7 @@ void colorReduce8(cv::Mat &image, int div=64) {
 	  cv::Mat_<cv::Vec3b>::iterator itend= image.end<cv::Vec3b>();
 
 	  for ( ; it!= itend; ++it) {
-        
+
 		// process each pixel ---------------------
 
         (*it)[0]= (*it)[0]/div*div + div/2;
@@ -266,7 +268,7 @@ void colorReduce9(cv::Mat &image, int div=64) {
 
 	  // scan all pixels
 	  for ( ; it!= itend; ++it) {
-        
+
 		// process each pixel ---------------------
 
         (*it)[0]= (*it)[0]&mask + div/2;
@@ -277,7 +279,7 @@ void colorReduce9(cv::Mat &image, int div=64) {
 	  }
 }
 
-// using MatIterator_ 
+// using MatIterator_
 void colorReduce10(cv::Mat &image, int div=64) {
 
 	  // get iterators
@@ -285,8 +287,8 @@ void colorReduce10(cv::Mat &image, int div=64) {
 	  cv::Mat_<cv::Vec3b>::iterator it=cimage.begin();
 	  cv::Mat_<cv::Vec3b>::iterator itend=cimage.end();
 
-	  for ( ; it!= itend; it++) { 
-        
+	  for ( ; it!= itend; it++) {
+
 		// process each pixel ---------------------
 
         (*it)[0]= (*it)[0]/div*div + div/2;
@@ -302,24 +304,24 @@ void colorReduce11(cv::Mat &image, int div=64) {
 
 	  int nl= image.rows; // number of lines
 	  int nc= image.cols; // number of columns
-              
+
       for (int j=0; j<nl; j++) {
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
                   image.at<cv::Vec3b>(j,i)[0]=	 image.at<cv::Vec3b>(j,i)[0]/div*div + div/2;
                   image.at<cv::Vec3b>(j,i)[1]=	 image.at<cv::Vec3b>(j,i)[1]/div*div + div/2;
                   image.at<cv::Vec3b>(j,i)[2]=	 image.at<cv::Vec3b>(j,i)[2]/div*div + div/2;
- 
+
             // end of pixel processing ----------------
- 
-            } // end of line                   
+
+            } // end of line
       }
 }
 
 // with input/ouput images
-void colorReduce12(const cv::Mat &image, // input image 
+void colorReduce12(const cv::Mat &image, // input image
                  cv::Mat &result,      // output image
                  int div=64) {
 
@@ -330,35 +332,35 @@ void colorReduce12(const cv::Mat &image, // input image
 	  result.create(image.rows,image.cols,image.type());
 
 	  // created images have no padded pixels
-	  nc= nc*nl; 
+	  nc= nc*nl;
 	  nl= 1;  // it is now a 1D array
 
 	  int n= static_cast<int>(log(static_cast<double>(div))/log(2.0));
 	  // mask used to round the pixel value
 	  uchar mask= 0xFF<<n; // e.g. for div=16, mask= 0xF0
-              
+
       for (int j=0; j<nl; j++) {
 
 		  uchar* data= result.ptr<uchar>(j);
 		  const uchar* idata= image.ptr<uchar>(j);
 
           for (int i=0; i<nc; i++) {
- 
+
             // process each pixel ---------------------
-                 
+
             *data++= (*idata++)&mask + div/2;
             *data++= (*idata++)&mask + div/2;
             *data++= (*idata++)&mask + div/2;
- 
+
             // end of pixel processing ----------------
- 
-          } // end of line                   
+
+          } // end of line
       }
 }
 
 // using overloaded operators
 void colorReduce13(cv::Mat &image, int div=64) {
-	
+
 	  int n= static_cast<int>(log(static_cast<double>(div))/log(2.0));
 	  // mask used to round the pixel value
 	  uchar mask= 0xFF<<n; // e.g. for div=16, mask= 0xF0
@@ -369,7 +371,7 @@ void colorReduce13(cv::Mat &image, int div=64) {
 
 
 #define NTESTS 14
-#define NITERATIONS 20
+#define NITERATIONS 10
 
 int main()
 {
@@ -385,105 +387,108 @@ int main()
 	int n=NITERATIONS;
 	for (int k=0; k<n; k++) {
 
-		std::cout << k << " of " << n << std::endl; 
+		std::cout << k << " of " << n << std::endl;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 	    if (!image1.data)
-		   return 0; 
+		   return 0;
 
 		// using .ptr and []
 	    tinit= cv::getTickCount();
 		colorReduce0(image1);
 		t[0]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
-		// using .ptr and * ++ 
+		image1= cv::imread("../images/panda.jpg");
+		// using .ptr and * ++
 	    tinit= cv::getTickCount();
 		colorReduce1(image1);
 		t[1]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using .ptr and * ++ and modulo
 	    tinit= cv::getTickCount();
 		colorReduce2(image1);
 		t[2]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using .ptr and * ++ and bitwise
 	    tinit= cv::getTickCount();
 		colorReduce3(image1);
 		t[3]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using direct pointer arithmetic
 	    tinit= cv::getTickCount();
 		colorReduce4(image1);
 		t[4]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using .ptr and * ++ and bitwise with image.cols * image.channels()
 	    tinit= cv::getTickCount();
 		colorReduce5(image1);
 		t[5]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using .ptr and * ++ and bitwise (continuous)
 	    tinit= cv::getTickCount();
 		colorReduce6(image1);
 		t[6]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using .ptr and * ++ and bitwise (continuous+channels)
 	    tinit= cv::getTickCount();
 		colorReduce7(image1);
 		t[7]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using Mat_ iterator
 	    tinit= cv::getTickCount();
 		colorReduce8(image1);
 		t[8]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
+		image1= cv::imread("../images/panda.jpg");
 		// using Mat_ iterator and bitwise
 	    tinit= cv::getTickCount();
 		colorReduce9(image1);
 		t[9]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
-		// using Mat_ iterator 
+		image1= cv::imread("../images/panda.jpg");
+		// using Mat_ iterator
 	    tinit= cv::getTickCount();
 		colorReduce10(image1);
 		t[10]+= cv::getTickCount()-tinit;
 
-		image1= cv::imread("../image.jpg");
-		// using at 
+		image1= cv::imread("../images/panda.jpg");
+		// using at
 	    tinit= cv::getTickCount();
 		colorReduce11(image1);
 		t[11]+= cv::getTickCount()-tinit;
-		
-		image1= cv::imread("../image.jpg");
-		// using input/output images 
+
+		image1= cv::imread("../images/panda.jpg");
+		// using input/output images
 	    tinit= cv::getTickCount();
 		cv::Mat result;
 		colorReduce12(image1, result);
 		t[12]+= cv::getTickCount()-tinit;
 
 		image2= result;
-		
-		image1= cv::imread("../image.jpg");
-		// using input/output images 
+
+		image1= cv::imread("../images/panda.jpg");
+		// using input/output images
 	    tinit= cv::getTickCount();
 		colorReduce13(image1);
 		t[13]+= cv::getTickCount()-tinit;
 
 		//------------------------------
 	}
-	    
+
+	/* here it uses a large image to run as benchmark so that images must resize before showing */
+    cv::resize(image2, image2, cv::Size(480, 480*image2.rows/image2.cols));
 	cv::namedWindow("Result");
 	cv::imshow("Result",image2);
+    cv::resize(image1, image1, cv::Size(480, 480*image1.rows/image1.cols));
 	cv::namedWindow("Image Result");
-	cv::imshow("Image Result",image1);
+	cv::imshow("Image Result", image1);
 
 	// print average execution time
 	std::cout << std::endl << "-------------------------------------------" << std::endl << std::endl;
@@ -497,11 +502,11 @@ int main()
 	std::cout << "using .ptr and * ++ and bitwise (continuous+channels) =" << 1000.*t[7]/cv::getTickFrequency()/n << "ms" << std::endl;
 	std::cout << "using Mat_ iterator =" << 1000.*t[8]/cv::getTickFrequency()/n << "ms" << std::endl;
 	std::cout << "using Mat_ iterator and bitwise =" << 1000.*t[9]/cv::getTickFrequency()/n << "ms" << std::endl;
-	std::cout << "using MatIterator_ =" << 1000.*t[10]/cv::getTickFrequency()/n << "ms" << std::endl;	
-	std::cout << "using at =" << 1000.*t[11]/cv::getTickFrequency()/n << "ms" << std::endl;	
-	std::cout << "using input/output images =" << 1000.*t[12]/cv::getTickFrequency()/n << "ms" << std::endl;	
-	std::cout << "using overloaded operators =" << 1000.*t[13]/cv::getTickFrequency()/n << "ms" << std::endl;	
-	
+	std::cout << "using MatIterator_ =" << 1000.*t[10]/cv::getTickFrequency()/n << "ms" << std::endl;
+	std::cout << "using at =" << 1000.*t[11]/cv::getTickFrequency()/n << "ms" << std::endl;
+	std::cout << "using input/output images =" << 1000.*t[12]/cv::getTickFrequency()/n << "ms" << std::endl;
+	std::cout << "using overloaded operators =" << 1000.*t[13]/cv::getTickFrequency()/n << "ms" << std::endl;
+
 	cv::waitKey();
 	return 0;
 }
