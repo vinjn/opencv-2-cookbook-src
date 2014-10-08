@@ -92,7 +92,7 @@ class ColorHistogram {
 		cv::cvtColor(image, lab, CV_BGR2Lab);
 
 		// Prepare arguments for a 2D color histogram
-        switch (image.depth) {
+        switch (image.depth()) {
             case CV_8U:
                 hranges[0]= 0.0;
                 hranges[1]= 255.0;
@@ -143,7 +143,7 @@ class ColorHistogram {
         }
 
 		// Prepare arguments for a 1D hue histogram
-        switch (image.depth) {
+        switch (image.depth()) {
             case CV_8U:
             case CV_16U:
             case CV_16S:
