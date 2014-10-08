@@ -92,8 +92,16 @@ class ColorHistogram {
 		cv::cvtColor(image, lab, CV_BGR2Lab);
 
 		// Prepare arguments for a 2D color histogram
-		hranges[0]= -128.0;
-		hranges[1]= 127.0;
+        switch (image.depth) {
+            case CV_8U:
+                hranges[0]= 0.0;
+                hranges[1]= 255.0;
+                break;
+            case CV_32F:
+                hranges[0]= -127.0;
+                hranges[1]= 127.0;
+                break;
+        }
 		channels[0]= 1; // the two channels used are ab
 		channels[1]= 2;
 
@@ -135,8 +143,18 @@ class ColorHistogram {
         }
 
 		// Prepare arguments for a 1D hue histogram
-		hranges[0]= 0.0;
-		hranges[1]= 180.0;
+        switch (image.depth) {
+            case CV_8U:
+            case CV_16U:
+            case CV_16S:
+                hranges[0]= 0.0;
+                hranges[1]= 180.0;
+                break;
+            case CV_32F:
+                hranges[0]= -127.0;
+                hranges[1]= 127.0;
+                break;
+        }
 		channels[0]= 0; // the hue channel
 
         // Compute histogram
