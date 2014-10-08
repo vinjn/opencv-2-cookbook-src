@@ -13,6 +13,7 @@
    and any consequent failure, is purely the responsibility of the user.
 
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 #include "mainwindow.h"
 #include "ui_mainwindow.h"

@@ -1,8 +1,8 @@
 #if !defined COLHISTOGRAM
 #define COLHISTOGRAM
 
-#include <opencv2\core\core.hpp>
-#include <opencv2\imgproc\imgproc.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 class ColorHistogram {
 
@@ -21,12 +21,12 @@ class ColorHistogram {
 		histSize[0]= histSize[1]= histSize[2]= 256;
 		hranges[0]= 0.0;    // BRG range
 		hranges[1]= 255.0;
-		ranges[0]= hranges; // all channels have the same range 
-		ranges[1]= hranges; 
-		ranges[2]= hranges; 
-		channels[0]= 0;		// the three channels 
-		channels[1]= 1; 
-		channels[2]= 2; 
+		ranges[0]= hranges; // all channels have the same range
+		ranges[1]= hranges;
+		ranges[2]= hranges;
+		channels[0]= 0;		// the three channels
+		channels[1]= 1;
+		channels[2]= 2;
 	}
 
 	// Computes the histogram.
@@ -37,12 +37,12 @@ class ColorHistogram {
 		// BGR color histogram
 		hranges[0]= 0.0;    // BRG range
 		hranges[1]= 255.0;
-		channels[0]= 0;		// the three channels 
-		channels[1]= 1; 
-		channels[2]= 2; 
+		channels[0]= 0;		// the three channels
+		channels[1]= 1;
+		channels[2]= 2;
 
 		// Compute histogram
-		cv::calcHist(&image, 
+		cv::calcHist(&image,
 			1,			// histogram of 1 image only
 			channels,	// the channel used
 			cv::Mat(),	// no mask is used
@@ -63,12 +63,12 @@ class ColorHistogram {
 		// BGR color histogram
 		hranges[0]= 0.0;    // BRG range
 		hranges[1]= 255.0;
-		channels[0]= 0;		// the three channels 
-		channels[1]= 1; 
-		channels[2]= 2; 
+		channels[0]= 0;		// the three channels
+		channels[1]= 1;
+		channels[2]= 2;
 
 		// Compute histogram
-		cv::calcHist(&image, 
+		cv::calcHist(&image,
 			1,			// histogram of 1 image only
 			channels,	// the channel used
 			cv::Mat(),	// no mask is used
@@ -94,11 +94,11 @@ class ColorHistogram {
 		// Prepare arguments for a 2D color histogram
 		hranges[0]= -128.0;
 		hranges[1]= 127.0;
-		channels[0]= 1; // the two channels used are ab 
-		channels[1]= 2; 
+		channels[0]= 1; // the two channels used are ab
+		channels[1]= 2;
 
 		// Compute histogram
-		cv::calcHist(&lab, 
+		cv::calcHist(&lab,
 			1,			// histogram of 1 image only
 			channels,	// the channel used
 			cv::Mat(),	// no mask is used
@@ -140,7 +140,7 @@ class ColorHistogram {
 		channels[0]= 0; // the hue channel
 
         // Compute histogram
-		cv::calcHist(&hsv, 
+		cv::calcHist(&hsv,
 			1,			// histogram of 1 image only
 			channels,	// the channel used
 			mask,	// no mask is used
@@ -167,7 +167,7 @@ class ColorHistogram {
 	  cv::Mat_<cv::Vec3b>::iterator itr= result.begin<cv::Vec3b>();
 
 	  for ( ; it!= itend; ++it, ++itr) {
-        
+
         (*itr)[0]= ((*it)[0]&mask) + div/2;
         (*itr)[1]= ((*it)[1]&mask) + div/2;
         (*itr)[2]= ((*it)[2]&mask) + div/2;
