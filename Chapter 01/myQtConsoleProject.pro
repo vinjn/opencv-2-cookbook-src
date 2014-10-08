@@ -2,6 +2,12 @@
 #
 # Project created by QtCreator
 #
+# As other .pro files in the example code, this is
+# just an example template.
+#
+# You have to configure INCLUDEPATH and LIBS to
+# fit your system.
+#
 #-------------------------------------------------
 
 QT       -= gui
