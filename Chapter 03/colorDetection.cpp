@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 3 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 3 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <opencv2/core/core.hpp>
@@ -26,9 +27,9 @@ int main()
 	ColorDetector cdetect;
 
 	// Read input image
-	cv::Mat image= cv::imread("boldt.jpg");
+	cv::Mat image= cv::imread("../images/boldt.jpg");
 	if (!image.data)
-		return 0; 
+		return 0;
 
    // set input parameters
 	cdetect.setTargetColor(130,190,230); // here blue sky

@@ -13,7 +13,7 @@
    and any consequent failure, is purely the responsibility of the user.
 
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
-   Copyright (C) 2014 Dugucloud, dugucloud@qq.com
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
