@@ -47,6 +47,8 @@ int main()
 	srand(cv::getTickCount()); // init random number generator
 
 	cv::Mat image= cv::imread("../images/boldt.jpg",0);
+    if (!image.data)
+        return 0;
 
 	salt(image,3000);
 

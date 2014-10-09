@@ -23,6 +23,8 @@ int main() {
 
 	// read an image
 	cv::Mat image= cv::imread("../images/dog.jpg");
+    if (!image.data)
+        return 0;
 	// create image window named "My Image"
 	cv::namedWindow("My Image");
 	// show the image on window

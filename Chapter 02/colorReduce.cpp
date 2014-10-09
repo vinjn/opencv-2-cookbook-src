@@ -482,7 +482,7 @@ int main()
 		//------------------------------
 	}
 
-	/* here it uses a large image to run as benchmark so that images must resize before showing */
+	// here it uses a large image to run as benchmark so that images must resize before showing
     cv::resize(image2, image2, cv::Size(480, 480*image2.rows/image2.cols));
 	cv::namedWindow("Result");
 	cv::imshow("Result",image2);
