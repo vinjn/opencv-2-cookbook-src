@@ -299,7 +299,7 @@ void colorReduce10(cv::Mat &image, int div=64) {
 	  }
 }
 
-
+// using at
 void colorReduce11(cv::Mat &image, int div=64) {
 
 	  int nl= image.rows; // number of lines
