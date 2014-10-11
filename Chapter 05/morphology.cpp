@@ -89,7 +89,7 @@ int main()
 	cv::imwrite("binaryGroup.bmp",image);
 
 	// Read input image
-	image= cv::imread("../binary.bmp");
+	image= cv::imread("../images/binary.bmp");
 
 	// Open and Close the image
 	cv::morphologyEx(image,image,cv::MORPH_OPEN,element5);
