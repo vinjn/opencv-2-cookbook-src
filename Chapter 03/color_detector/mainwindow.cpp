@@ -16,6 +16,10 @@
    Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 

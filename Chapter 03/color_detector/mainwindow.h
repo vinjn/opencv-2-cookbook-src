@@ -48,7 +48,7 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
-    void on_pushButton_color_clicked();
+    //void on_pushButton_color_clicked();
     void processColorDetection();
     void on_verticalSlider_Threshold_valueChanged(int value);
 
