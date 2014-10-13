@@ -60,9 +60,8 @@ int main()
 	// Eliminate too short or too long contours
 	int cmin= 100;  // minimum contour length
 	int cmax= 1000; // maximum contour length
-	std::vector<std::vector<cv::Point> >::const_iterator itc= contours.begin();
+	std::vector<std::vector<cv::Point> >::iterator itc= contours.begin();
 	while (itc!=contours.end()) {
-
 		if (itc->size() < cmin || itc->size() > cmax)
 			itc= contours.erase(itc);
 		else
@@ -97,7 +96,10 @@ int main()
 	float radius;
 	cv::Point2f center;
 	cv::minEnclosingCircle(cv::Mat(contours[1]),center,radius);
-	cv::circle(result,cv::Point(center),static_cast<int>(radius),cv::Scalar(0),2);
+
+    // converting floating point coordinations to integers
+    cv::Point icenter(center.x, center.y);
+	cv::circle(result,cv::Point(icenter),static_cast<int>(radius),cv::Scalar(0),2);
 
 //	cv::RotatedRect rrect= cv::fitEllipse(cv::Mat(contours[1]));
 //	cv::ellipse(result,rrect,cv::Scalar(0),2);
