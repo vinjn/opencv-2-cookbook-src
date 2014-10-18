@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 9 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 9 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -36,14 +37,16 @@ int main()
 	for (int i=1; i<=20; i++) {
 
 		std::stringstream str;
-		str << "../chessboards/chessboard" << std::setw(2) << std::setfill('0') << i << ".jpg";
+		str << "../images/chessboards/chessboard" << std::setw(2) << std::setfill('0') << i << ".jpg";
 		std::cout << str.str() << std::endl;
 
 		filelist.push_back(str.str());
 		image= cv::imread(str.str(),0);
+        if (!image.data)
+            return 0;
 		cv::imshow("Image",image);
-	
-		 cv::waitKey(100);
+
+		cv::waitKey(100);
 	}
 
 	// Create calibrator object

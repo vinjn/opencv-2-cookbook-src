@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 9 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 9 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -27,10 +28,10 @@
 int main()
 {
 	// Read input images
-	cv::Mat image1= cv::imread("../parliament1.bmp",0);
-	cv::Mat image2= cv::imread("../parliament2.bmp",0);
+	cv::Mat image1= cv::imread("../images/parliament1.bmp",0);
+	cv::Mat image2= cv::imread("../images/parliament2.bmp",0);
 	if (!image1.data || !image2.data)
-		return 0; 
+		return 0;
 
     // Display the images
 	cv::namedWindow("Image 1");
@@ -43,13 +44,13 @@ int main()
 	rmatcher.setConfidenceLevel(0.98);
 	rmatcher.setMinDistanceToEpipolar(1.0);
 	rmatcher.setRatio(0.65f);
-	cv::Ptr<cv::FeatureDetector> pfd= new cv::SurfFeatureDetector(10); 
+	cv::Ptr<cv::FeatureDetector> pfd= new cv::SurfFeatureDetector(10);
 	rmatcher.setFeatureDetector(pfd);
 
 	// Match the two images
 	std::vector<cv::DMatch> matches;
 	std::vector<cv::KeyPoint> keypoints1, keypoints2;
-	cv::Mat fundemental= rmatcher.match(image1,image2,matches, keypoints1, keypoints2);
+	cv::Mat fundamental= rmatcher.match(image1,image2,matches, keypoints1, keypoints2);
 
 	// draw the matches
 	cv::Mat imageMatches;
@@ -60,7 +61,7 @@ int main()
 					cv::Scalar(255,255,255)); // color of the lines
 	cv::namedWindow("Matches");
 	cv::imshow("Matches",imageMatches);
-	
+
 	// Convert keypoints into Point2f
 	std::vector<cv::Point2f> points1, points2;
 	for (std::vector<cv::DMatch>::const_iterator it= matches.begin();
@@ -76,13 +77,13 @@ int main()
 			 points2.push_back(cv::Point2f(x,y));
 	}
 
-	std::cout << points1.size() << " " << points2.size() << std::endl; 
+	std::cout << points1.size() << " " << points2.size() << std::endl;
 
 	// Find the homography between image 1 and image 2
 	std::vector<uchar> inliers(points1.size(),0);
 	cv::Mat homography= cv::findHomography(
 		cv::Mat(points1),cv::Mat(points2), // corresponding points
-		inliers,	// outputed inliers matches 
+		inliers,	// outputed inliers matches
 		CV_RANSAC,	// RANSAC method
 		1.);	    // max distance to reprojection point
 
@@ -92,9 +93,9 @@ int main()
 	while (itPts!=points1.end()) {
 
 		// draw a circle at each inlier location
-		if (*itIn) 
+		if (*itIn)
  			cv::circle(image1,*itPts,3,cv::Scalar(255,255,255),2);
-		
+
 		++itPts;
 		++itIn;
 	}
@@ -104,9 +105,9 @@ int main()
 	while (itPts!=points2.end()) {
 
 		// draw a circle at each inlier location
-		if (*itIn) 
+		if (*itIn)
 			cv::circle(image2,*itPts,3,cv::Scalar(255,255,255),2);
-		
+
 		++itPts;
 		++itIn;
 	}

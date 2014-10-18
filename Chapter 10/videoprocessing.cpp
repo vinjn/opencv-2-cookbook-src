@@ -1,17 +1,17 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 10 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 10 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
 \*------------------------------------------------------------------------------------------*/
 
@@ -41,7 +41,7 @@ void canny(cv::Mat& img, cv::Mat& out) {
 int main()
 {
 	// Open the video file
-    cv::VideoCapture capture("../bike.avi");
+    cv::VideoCapture capture("../images/bike.avi");
 	// check if video successfully opened
 	if (!capture.isOpened())
 		return 1;
@@ -76,13 +76,13 @@ int main()
 	capture.release();
 
 	cv::waitKey();
-		
+
 	// Now using the VideoProcessor class
 
 	// Create instance
 	VideoProcessor processor;
 	// Open video file
-	processor.setInput("../bike.avi");
+	processor.setInput("../images/bike.avi");
 	// Declare a window to display the video
 	processor.displayInput("Input Video");
 	processor.displayOutput("Output Video");
@@ -93,12 +93,12 @@ int main()
 	// Start the process
 	processor.run();
 	cv::waitKey();
-	
+
 	// Second test
 	// Create instance
     //	VideoProcessor processor;
 	// Open video file
-	processor.setInput("../bike.avi");
+	processor.setInput("../images/bike.avi");
 
 	// Get basic info about video file
 	cv::Size size= processor.getFrameSize();
@@ -111,9 +111,9 @@ int main()
 	// No processing
 	processor.dontCallProcess();
 	// Output filename
-//	processor.setOutput("../output/bikeOut",".jpg");
+//	processor.setOutput("bikeOut",".jpg");
 	char codec[4];
-	processor.setOutput("../output/bike.avi",processor.getCodec(codec),processor.getFrameRate());
+	processor.setOutput("bike.avi",processor.getCodec(codec),processor.getFrameRate());
 	std::cout << "Codec: " << codec[0] << codec[1] << codec[2] << codec[3] << std::endl;
 
 	// Position the stream at frame 300

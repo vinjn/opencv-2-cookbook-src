@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 8 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 8 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -21,14 +22,16 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/legacy/legacy.hpp>
 
 int main()
 {
 	// Read input images
-	cv::Mat image1= cv::imread("../church01.jpg",0);
-	cv::Mat image2= cv::imread("../church02.jpg",0);
+	cv::Mat image1= cv::imread("../images/church01.jpg",0);
+	cv::Mat image2= cv::imread("../images/church02.jpg",0);
 	if (!image1.data || !image2.data)
-		return 0; 
+		return 0;
 
     // Display the images
 	cv::namedWindow("Right Image");
@@ -40,7 +43,7 @@ int main()
 	std::vector<cv::KeyPoint> keypoints1;
 	std::vector<cv::KeyPoint> keypoints2;
 
-	// Construction of the SURF feature detector 
+	// Construction of the SURF feature detector
 	cv::SurfFeatureDetector surf(3000);
 
 	// Detection of the SURF features
@@ -49,8 +52,8 @@ int main()
 
 	std::cout << "Number of SURF points (1): " << keypoints1.size() << std::endl;
 	std::cout << "Number of SURF points (2): " << keypoints2.size() << std::endl;
-	
-	// Draw the kepoints
+
+	// Draw the keypoints
 	cv::Mat imageKP;
 	cv::drawKeypoints(image1,keypoints1,imageKP,cv::Scalar(255,255,255),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 	cv::namedWindow("Right SURF Features");
@@ -59,7 +62,7 @@ int main()
 	cv::namedWindow("Left SURF Features");
 	cv::imshow("Left SURF Features",imageKP);
 
-	// Construction of the SURF descriptor extractor 
+	// Construction of the SURF descriptor extractor
 	cv::SurfDescriptorExtractor surfDesc;
 
 	// Extraction of the SURF descriptors
@@ -69,8 +72,8 @@ int main()
 
 	std::cout << "descriptor matrix size: " << descriptors1.rows << " by " << descriptors1.cols << std::endl;
 
-	// Construction of the matcher 
-	cv::BruteForceMatcher<cv::L2<float>> matcher;
+	// Construction of the matcher
+	cv::BruteForceMatcher<cv::L2<float> > matcher;
 
 	// Match the two image descriptors
 	std::vector<cv::DMatch> matches;
@@ -82,7 +85,7 @@ int main()
 		             matches.begin()+24, // position of the sorted element
 					 matches.end());     // end position
 	// remove all elements after the 25th
-	matches.erase(matches.begin()+25, matches.end()); 
+	matches.erase(matches.begin()+25, matches.end());
 
 	cv::Mat imageMatches;
 	cv::drawMatches(image1,keypoints1,  // 1st image and its keypoints
@@ -92,16 +95,6 @@ int main()
 					cv::Scalar(255,255,255)); // color of the lines
 	cv::namedWindow("Matches");
 	cv::imshow("Matches",imageMatches);
-
-	cv::waitKey();
-	return 0;
-
-	int size=7;
-	cv::Mat imaf1;
-	image1.convertTo(imaf1,CV_32F);
-
-	cv::Mat imaf2;
-	image2.convertTo(imaf2,CV_32F);
 
 	cv::waitKey();
 	return 0;

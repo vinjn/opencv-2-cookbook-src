@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 2 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 2 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -36,8 +37,8 @@ void sharpen(const cv::Mat &image, cv::Mat &result) {
 
 		for (int i=1; i<image.cols-1; i++) {
 
-			*output++= cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]); 
-//			output[i]= cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]); 
+			*output++= cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]);
+//			output[i]= cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]);
 		}
 	}
 
@@ -61,7 +62,7 @@ void sharpen2(const cv::Mat &image, cv::Mat &result) {
 	for (int j= 1; j<image.rows-1; j++) { // for each row (except first and last)
 		for (int i=1; i<image.cols-1; i++) { // for each column (except first and last)
 
-			output[i]= cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]); 
+			output[i]= cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]);
 		}
 
 		previous+= step;
@@ -89,7 +90,7 @@ void sharpen3(const cv::Mat &image, cv::Mat &result) {
 
 	for ( ; it!= itend; ++it, ++itup, ++itdown) {
 
-			*itout= cv::saturate_cast<uchar>(*it *5 - *(it-1)- *(it+1)- *itup - *itdown); 
+			*itout= cv::saturate_cast<uchar>(*it *5 - *(it-1)- *(it+1)- *itup - *itdown);
 	}
 }
 
@@ -110,9 +111,9 @@ void sharpen2D(const cv::Mat &image, cv::Mat &result) {
 
 int main()
 {
-	cv::Mat image= cv::imread("boldt.jpg",0);
+	cv::Mat image= cv::imread("../images/boldt.jpg",0);
 	if (!image.data)
-		return 0; 
+		return 0;
 
 	cv::Mat result;
 	result.create(image.size(),image.type());
@@ -125,7 +126,7 @@ int main()
 	cv::namedWindow("Image");
 	cv::imshow("Image",result);
 
-	image= cv::imread("boldt.jpg",0);
+	image= cv::imread("../images/boldt.jpg",0);
 	time= static_cast<double>(cv::getTickCount());
 	sharpen3(image, result);
 	time= (static_cast<double>(cv::getTickCount())-time)/cv::getTickFrequency();
@@ -134,7 +135,7 @@ int main()
 	cv::namedWindow("Image 3");
 	cv::imshow("Image 3",result);
 
-	image= cv::imread("boldt.jpg",0);
+	image= cv::imread("../images/boldt.jpg",0);
 	time= static_cast<double>(cv::getTickCount());
 	sharpen2D(image, result);
 	time= (static_cast<double>(cv::getTickCount())-time)/cv::getTickFrequency();
@@ -147,5 +148,3 @@ int main()
 
 	return 0;
 }
-
-

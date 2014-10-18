@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 7 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 7 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -24,14 +25,14 @@
 #include "linefinder.h"
 #include "edgedetector.h"
 
-#define PI 3.1415926
+#define PI 3.14159265358979323846
 
 int main()
 {
 	// Read input image
-	cv::Mat image= cv::imread("../road.jpg",0);
+	cv::Mat image= cv::imread("../images/road.jpg",0);
 	if (!image.data)
-		return 0; 
+		return 0;
 
     // Display the image
 	cv::namedWindow("Original Image");
@@ -80,7 +81,7 @@ int main()
 
 	// Hough tranform for line detection
 	std::vector<cv::Vec2f> lines;
-	cv::HoughLines(contours,lines,1,PI/180,60);
+	cv::HoughLines(contours,lines,1,PI/180,80);
 
 	// Draw the lines
 	cv::Mat result(contours.rows,contours.cols,CV_8U,cv::Scalar(255));
@@ -93,27 +94,27 @@ int main()
 
 		float rho= (*it)[0];   // first element is distance rho
 		float theta= (*it)[1]; // second element is angle theta
-		
+
 		if (theta < PI/4. || theta > 3.*PI/4.) { // ~vertical line
-		
+
 			// point of intersection of the line with first row
-			cv::Point pt1(rho/cos(theta),0);        
+			cv::Point pt1(rho/cos(theta),0);
 			// point of intersection of the line with last row
 			cv::Point pt2((rho-result.rows*sin(theta))/cos(theta),result.rows);
 			// draw a white line
-			cv::line( result, pt1, pt2, cv::Scalar(255), 1); 
+			cv::line( result, pt1, pt2, cv::Scalar(255), 1);
 
 		} else { // ~horizontal line
 
 			// point of intersection of the line with first column
-			cv::Point pt1(0,rho/sin(theta));        
+			cv::Point pt1(0,rho/sin(theta));
 			// point of intersection of the line with last column
 			cv::Point pt2(result.cols,(rho-result.cols*cos(theta))/sin(theta));
 			// draw a white line
-			cv::line( result, pt1, pt2, cv::Scalar(255), 1); 
+			cv::line( result, pt1, pt2, cv::Scalar(255), 1);
 		}
 
-		std::cout << "line: (" << rho << "," << theta << ")\n"; 
+		std::cout << "line: (" << rho << "," << theta << ")\n";
 
 		++it;
 	}
@@ -138,14 +139,14 @@ int main()
 	std::vector<cv::Vec4i>::const_iterator it2= li.begin();
 	while (it2!=li.end()) {
 
-		std::cout << "(" << (*it2)[0] << ","<< (*it2)[1]<< ")-(" 
+		std::cout << "(" << (*it2)[0] << ","<< (*it2)[1]<< ")-("
 			     << (*it2)[2]<< "," << (*it2)[3] << ")" <<std::endl;
 
 		++it2;
 	}
 
 	// Display one line
-	image= cv::imread("../road.jpg",0);
+	image= cv::imread("../images/road.jpg",0);
 	int n=0;
 	cv::line(image, cv::Point(li[n][0],li[n][1]),cv::Point(li[n][2],li[n][3]),cv::Scalar(255),5);
 	cv::namedWindow("One line of the Image");
@@ -164,9 +165,9 @@ int main()
 
 	// Iterate over the pixels to obtain all point positions
 	for( int y = 0; y < oneline.rows; y++ ) {
-    
+
 		uchar* rowPtr = oneline.ptr<uchar>(y);
-    
+
 		for( int x = 0; x < oneline.cols; x++ ) {
 
 		    // if on a contour
@@ -176,18 +177,18 @@ int main()
 			}
 		}
     }
-	
+
 	// find the best fitting line
 	cv::Vec4f line;
 	cv::fitLine(cv::Mat(points),line,CV_DIST_L2,0,0.01,0.01);
 
-	std::cout << "line: (" << line[0] << "," << line[1] << ")(" << line[2] << "," << line[3] << ")\n"; 
+	std::cout << "line: (" << line[0] << "," << line[1] << ")(" << line[2] << "," << line[3] << ")\n";
 
 	int x0= line[2];
 	int y0= line[3];
 	int x1= x0-200*line[0];
 	int y1= y0-200*line[1];
-	image= cv::imread("../road.jpg",0);
+	image= cv::imread("../images/road.jpg",0);
 	cv::line(image,cv::Point(x0,y0),cv::Point(x1,y1),cv::Scalar(0),3);
 	cv::namedWindow("Estimated line");
 	cv::imshow("Estimated line",image);
@@ -196,7 +197,7 @@ int main()
 	ld.removeLinesOfInconsistentOrientations(ed.getOrientation(),0.4,0.1);
 
    // Display the detected line image
-	image= cv::imread("../road.jpg",0);
+	image= cv::imread("../images/road.jpg",0);
 	ld.drawDetectedLines(image);
 	cv::namedWindow("Detected Lines (2)");
 	cv::imshow("Detected Lines (2)",image);
@@ -212,7 +213,7 @@ int main()
 
 		double theta= i*PI/180.;
 
-		// find corresponding rho value 
+		// find corresponding rho value
 		double rho= x*cos(theta)+y*sin(theta);
 		int j= static_cast<int>(rho+100.5);
 
@@ -242,31 +243,33 @@ int main()
 	cv::imwrite("hough2.bmp",acc*100);
 
 	// Detect circles
-	image= cv::imread("../chariot.jpg",0);
+	image= cv::imread("../images/chariot.jpg",0);
+    if (!image.data)
+        return 0;
 	cv::GaussianBlur(image,image,cv::Size(5,5),1.5);
 	std::vector<cv::Vec3f> circles;
-	cv::HoughCircles(image, circles, CV_HOUGH_GRADIENT, 
-		2,   // accumulator resolution (size of the image / 2) 
+	cv::HoughCircles(image, circles, CV_HOUGH_GRADIENT,
+		2,   // accumulator resolution (size of the image / 2)
 		50,  // minimum distance between two circles
-		200, // Canny high threshold 
-		100, // minimum number of votes 
+		200, // Canny high threshold
+		100, // minimum number of votes
 		25, 100); // min and max radius
 
 	std::cout << "Circles: " << circles.size() << std::endl;
-	
+
 	// Draw the circles
-	image= cv::imread("../chariot.jpg",0);
+	image= cv::imread("../images/chariot.jpg",0);
 	std::vector<cv::Vec3f>::const_iterator itc= circles.begin();
-	
+
 	while (itc!=circles.end()) {
-		
-	  cv::circle(image, 
+
+	  cv::circle(image,
 		  cv::Point((*itc)[0], (*itc)[1]), // circle centre
 		  (*itc)[2], // circle radius
-		  cv::Scalar(255), // color 
+		  cv::Scalar(255), // color
 		  2); // thickness
-		
-	  ++itc;	
+
+	  ++itc;
 	}
 
 	cv::namedWindow("Detected Circles");

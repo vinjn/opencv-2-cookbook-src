@@ -1,8 +1,8 @@
 #if !defined OFINDER
 #define OFINDER
 
-#include <opencv2\core\core.hpp>
-#include <opencv2\imgproc\imgproc.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 class ObjectFinder {
 
@@ -21,11 +21,11 @@ class ObjectFinder {
 
 	ObjectFinder() : threshold(0.1f), isSparse(false) {
 
-		ranges[0]= hranges; // all channels have the same range 
-		ranges[1]= hranges; 
-		ranges[2]= hranges; 
+		ranges[0]= hranges; // all channels have the same range
+		ranges[1]= hranges;
+		ranges[2]= hranges;
 	}
-   
+
 	// Sets the threshold on histogram values [0,1]
 	void setThreshold(float t) {
 
@@ -61,9 +61,9 @@ class ObjectFinder {
 
 		hranges[0]= 0.0;	// range [0,255]
 		hranges[1]= 255.0;
-		channels[0]= 0;		// the three channels 
-		channels[1]= 1; 
-		channels[2]= 2; 
+		channels[0]= 0;		// the three channels
+		channels[1]= 1;
+		channels[2]= 2;
 
 		if (isSparse) { // call the right function based on histogram type
 

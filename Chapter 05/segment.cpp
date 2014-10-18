@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 5 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 5 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -25,9 +26,9 @@
 int main()
 {
 	// Read input image
-	cv::Mat image= cv::imread("../group.jpg");
+	cv::Mat image= cv::imread("../images/group.jpg");
 	if (!image.data)
-		return 0; 
+		return 0;
 
     // Display the image
 	cv::namedWindow("Original Image");
@@ -35,7 +36,7 @@ int main()
 
 	// Get the binary map
 	cv::Mat binary;
-	binary= cv::imread("../binary.bmp",0);
+	binary= cv::imread("../images/binary.bmp",0);
 
     // Display the binary image
 	cv::namedWindow("Binary Image");
@@ -80,7 +81,9 @@ int main()
 	cv::imshow("Watersheds",segmenter.getWatersheds());
 
 	// Open another image
-	image= cv::imread("../tower.jpg");
+	image= cv::imread("../images/tower.jpg");
+    if (!image.data)
+        return 0;
 
 	// Identify background pixels
 	cv::Mat imageMask(image.size(),CV_8U,cv::Scalar(0));
@@ -105,9 +108,9 @@ int main()
 	cv::imshow("Watersheds of foreground object",segmenter.getWatersheds());
 
 	// Open another image
-	image= cv::imread("../tower.jpg");
+	image= cv::imread("../images/tower.jpg");
 
-	// define bounding rectangle 
+	// define bounding rectangle
 	cv::Rect rectangle(50,70,image.cols-150,image.rows-180);
 
 	cv::Mat result; // segmentation result (4 possible values)
@@ -115,7 +118,7 @@ int main()
 	// GrabCut segmentation
 	cv::grabCut(image,    // input image
 		        result,   // segmentation result
-				rectangle,// rectangle containing foreground 
+				rectangle,// rectangle containing foreground
 				bgModel,fgModel, // models
 				1,        // number of iterations
 				cv::GC_INIT_WITH_RECT); // use rectangle
@@ -136,10 +139,10 @@ int main()
 	cv::imshow("Segmented Image",foreground);
 
 	// Open another image
-	image= cv::imread("../group.jpg");
+	image= cv::imread("../images/group.jpg");
 
-	// define bounding rectangle 
-		cv::Rect rectangle2(10,100,380,180);
+	// define bounding rectangle
+    cv::Rect rectangle2(10,100,380,180);
 
 	cv::Mat bkgModel,fgrModel; // the models (internally used)
 	// GrabCut segmentation

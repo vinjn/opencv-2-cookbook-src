@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 5 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 5 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <opencv2/core/core.hpp>
@@ -23,9 +24,9 @@
 int main()
 {
 	// Read input image
-	cv::Mat image= cv::imread("../building.jpg",0);
+	cv::Mat image= cv::imread("../images/building.jpg",0);
 	if (!image.data)
-		return 0; 
+		return 0;
 
     // Display the image
 	cv::namedWindow("Image");
@@ -60,19 +61,21 @@ int main()
 	cv::imshow("Corners on Image",image);
 
 	// Read and display image of square
-	image= cv::imread("../square.bmp",0);
+	image= cv::imread("../images/square.bmp",0);
+    if (!image.data)
+        return 0;
 	cv::namedWindow("Square Image");
 	cv::imshow("Square Image",image);
 
 	// Creating the cross-shaped structuring element
 	cv::Mat cross(5,5,CV_8U,cv::Scalar(0));
 	for (int i=0; i<5; i++) {
-		  
+
 	  cross.at<uchar>(2,i)= 1;
-	  cross.at<uchar>(i,2)= 1;									
+	  cross.at<uchar>(i,2)= 1;
 	}
-		  
-	// Dilate with a cross	
+
+	// Dilate with a cross
 	cv::Mat result;
 	cv::dilate(image,result,cross);
 

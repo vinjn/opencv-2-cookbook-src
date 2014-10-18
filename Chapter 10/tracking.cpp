@@ -1,17 +1,17 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 10 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 10 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
 \*------------------------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ int main()
 	FeatureTracker tracker;
 
 	// Open video file
-	processor.setInput("../bike.avi");
+	processor.setInput("../images/bike.avi");
 
 	// set frame processor
 	processor.setFrameProcessor(&tracker);
@@ -86,7 +86,7 @@ int main()
 			break;
 
 
-		cv::cvtColor(frame, gray, CV_BGR2GRAY); 
+		cv::cvtColor(frame, gray, CV_BGR2GRAY);
 		if(firstframe)
 		{
 			cv::goodFeaturesToTrack(gray, features, MAX_COUNT, 0.01, 10, cv::Mat(), 3, 0, 0.04);
@@ -94,7 +94,7 @@ int main()
 			points[0].insert(points[0].end(),features.begin(),features.end());
 			firstframe=false;
 		}
-		
+
 		{
 			std::vector<uchar> status;
             std::vector<float> err;
@@ -134,7 +134,7 @@ int main()
 
 	cv::waitKey();
 
-	
+
 	// Create instance
 	VideoProcessor processor;
 	// Open video file

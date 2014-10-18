@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 7 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 7 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -24,23 +25,23 @@
 int main()
 {
 	// Read input binary image
-	cv::Mat image= cv::imread("../binaryGroup.bmp",0);
+	cv::Mat image= cv::imread("../images/binaryGroup.bmp",0);
 	if (!image.data)
-		return 0; 
+		return 0;
 
 	cv::namedWindow("Binary Image");
 	cv::imshow("Binary Image",image);
 
 	// Get the contours of the connected components
-	std::vector<std::vector<cv::Point>> contours;
-	cv::findContours(image, 
-		contours, // a vector of contours 
+	std::vector<std::vector<cv::Point> > contours;
+	cv::findContours(image,
+		contours, // a vector of contours
 		CV_RETR_EXTERNAL, // retrieve the external contours
 		CV_CHAIN_APPROX_NONE); // retrieve all pixels of each contours
 
 	// Print contours' length
 	std::cout << "Contours: " << contours.size() << std::endl;
-	std::vector<std::vector<cv::Point>>::const_iterator itContours= contours.begin();
+	std::vector<std::vector<cv::Point> >::const_iterator itContours= contours.begin();
 	for ( ; itContours!=contours.end(); ++itContours) {
 
 		std::cout << "Size: " << itContours->size() << std::endl;
@@ -59,17 +60,18 @@ int main()
 	// Eliminate too short or too long contours
 	int cmin= 100;  // minimum contour length
 	int cmax= 1000; // maximum contour length
-	std::vector<std::vector<cv::Point>>::const_iterator itc= contours.begin();
+	std::vector<std::vector<cv::Point> >::iterator itc= contours.begin();
 	while (itc!=contours.end()) {
-
 		if (itc->size() < cmin || itc->size() > cmax)
 			itc= contours.erase(itc);
-		else 
+		else
 			++itc;
 	}
 
 	// draw contours on the original image
-	cv::Mat original= cv::imread("../group.jpg");
+	cv::Mat original= cv::imread("../images/group.jpg");
+    if (!image.data)
+        return 0;
 	cv::drawContours(original,contours,
 		-1, // draw all contours
 		cv::Scalar(255,255,255), // in white
@@ -84,17 +86,20 @@ int main()
 		-1, // draw all contours
 		cv::Scalar(0), // in black
 		1); // with a thickness of 1
-	image= cv::imread("../binaryGroup.bmp",0);
+	image= cv::imread("../images/binaryGroup.bmp",0);
 
-	// testing the bounding box 
+	// testing the bounding box
 	cv::Rect r0= cv::boundingRect(cv::Mat(contours[0]));
 	cv::rectangle(result,r0,cv::Scalar(0),2);
 
-	// testing the enclosing circle 
+	// testing the enclosing circle
 	float radius;
 	cv::Point2f center;
 	cv::minEnclosingCircle(cv::Mat(contours[1]),center,radius);
-	cv::circle(result,cv::Point(center),static_cast<int>(radius),cv::Scalar(0),2);
+
+    // converting floating point coordinations to integers
+    cv::Point icenter(center.x, center.y);
+	cv::circle(result,cv::Point(icenter),static_cast<int>(radius),cv::Scalar(0),2);
 
 //	cv::RotatedRect rrect= cv::fitEllipse(cv::Mat(contours[1]));
 //	cv::ellipse(result,rrect,cv::Scalar(0),2);
@@ -147,11 +152,11 @@ int main()
 	cv::imshow("Some Shape descriptors",result);
 
 	// New call to findContours but with CV_RETR_LIST flag
-	image= cv::imread("../binaryGroup.bmp",0);
+	image= cv::imread("../images/binaryGroup.bmp",0);
 
 	// Get the contours of the connected components
-	cv::findContours(image, 
-		contours, // a vector of contours 
+	cv::findContours(image,
+		contours, // a vector of contours
 		CV_RETR_LIST, // retrieve the external and internal contours
 		CV_CHAIN_APPROX_NONE); // retrieve all pixels of each contours
 

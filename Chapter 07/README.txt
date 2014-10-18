@@ -14,5 +14,5 @@ Fitting a Line to a Set of Points
 File:
 	blobs.cpp
 correspond to Recipes:
-Extracting the Components’ Contours
-Computing Components’ Shape Descriptors
+Extracting the Components Contours
+Computing Components Shape Descriptors

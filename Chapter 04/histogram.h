@@ -1,8 +1,8 @@
 #if !defined HISTOGRAM
 #define HISTOGRAM
 
-#include <opencv2\core\core.hpp>
-#include <opencv2\imgproc\imgproc.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 class Histogram1D {
 
@@ -21,7 +21,7 @@ class Histogram1D {
 		histSize[0]= 256;
 		hranges[0]= 0.0;
 		hranges[1]= 255.0;
-		ranges[0]= hranges; 
+		ranges[0]= hranges;
 		channels[0]= 0; // by default, we look at channel 0
 	}
 
@@ -77,7 +77,7 @@ class Histogram1D {
 		cv::MatND hist;
 
 		// Compute histogram
-		cv::calcHist(&image, 
+		cv::calcHist(&image,
 			1,			// histogram of 1 image only
 			channels,	// the channel used
 			cv::Mat(),	// no mask is used
@@ -107,7 +107,7 @@ class Histogram1D {
 		// set highest point at 90% of nbins
 		int hpt = static_cast<int>(0.9*histSize[0]);
 
-		// Draw vertical line for each bin 
+		// Draw vertical line for each bin
 		for( int h = 0; h < histSize[0]; h++ ) {
 
 			float binVal = hist.at<float>(h);
@@ -140,7 +140,7 @@ class Histogram1D {
 			if (hist.at<float>(imin) > minValue)
 				break;
 		}
-		
+
 		// find right extremity of the histogram
 		int imax= histSize[0]-1;
 		for( ; imax >= 0; imax-- ) {
@@ -154,7 +154,7 @@ class Histogram1D {
 		cv::MatND lookup(1,dims,CV_8U);
 
 		for (int i=0; i<256; i++) {
-		
+
 			if (i < imin) lookup.at<uchar>(i)= 0;
 			else if (i > imax) lookup.at<uchar>(i)= 255;
 			else lookup.at<uchar>(i)= static_cast<uchar>(255.0*(i-imin)/(imax-imin)+0.5);

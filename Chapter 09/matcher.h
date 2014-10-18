@@ -1,18 +1,19 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 9 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 9 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
- 
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+   Copyright (C) 2014 Dugucloud, Dugucloud@users.noreply.github.com
 \*------------------------------------------------------------------------------------------*/
 
 #if !defined MATCHER
@@ -23,6 +24,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/legacy/legacy.hpp>
 
 class RobustMatcher {
 
@@ -39,7 +42,7 @@ class RobustMatcher {
 
   public:
 
-	  RobustMatcher() : ratio(0.65f), refineF(true), confidence(0.99), distance(3.0) {	  
+	  RobustMatcher() : ratio(0.65f), refineF(true), confidence(0.99), distance(3.0) {
 
 		  // SURF is the default feature
 		  detector= new cv::SurfFeatureDetector();
@@ -83,14 +86,14 @@ class RobustMatcher {
 	  }
 
 	  // Clear matches for which NN ratio is > than threshold
-	  // return the number of removed points 
+	  // return the number of removed points
 	  // (corresponding entries being cleared, i.e. size will be 0)
-	  int ratioTest(std::vector<std::vector<cv::DMatch>>& matches) {
+	  int ratioTest(std::vector<std::vector<cv::DMatch> >& matches) {
 
 		int removed=0;
 
         // for all matches
-		for (std::vector<std::vector<cv::DMatch>>::iterator matchIterator= matches.begin();
+		for (std::vector<std::vector<cv::DMatch> >::iterator matchIterator= matches.begin();
 			 matchIterator!= matches.end(); ++matchIterator) {
 
 				 // if 2 NN has been identified
@@ -114,26 +117,26 @@ class RobustMatcher {
 	  }
 
 	  // Insert symmetrical matches in symMatches vector
-	  void symmetryTest(const std::vector<std::vector<cv::DMatch>>& matches1,
-		                const std::vector<std::vector<cv::DMatch>>& matches2,
+	  void symmetryTest(const std::vector<std::vector<cv::DMatch> >& matches1,
+		                const std::vector<std::vector<cv::DMatch> >& matches2,
 					    std::vector<cv::DMatch>& symMatches) {
-			
+
 		// for all matches image 1 -> image 2
-		for (std::vector<std::vector<cv::DMatch>>::const_iterator matchIterator1= matches1.begin();
+		for (std::vector<std::vector<cv::DMatch> >::const_iterator matchIterator1= matches1.begin();
 			 matchIterator1!= matches1.end(); ++matchIterator1) {
 
-			if (matchIterator1->size() < 2) // ignore deleted matches 
+			if (matchIterator1->size() < 2) // ignore deleted matches
 				continue;
 
 			// for all matches image 2 -> image 1
-			for (std::vector<std::vector<cv::DMatch>>::const_iterator matchIterator2= matches2.begin();
+			for (std::vector<std::vector<cv::DMatch> >::const_iterator matchIterator2= matches2.begin();
 				matchIterator2!= matches2.end(); ++matchIterator2) {
 
-				if (matchIterator2->size() < 2) // ignore deleted matches 
+				if (matchIterator2->size() < 2) // ignore deleted matches
 					continue;
 
 				// Match symmetry test
-				if ((*matchIterator1)[0].queryIdx == (*matchIterator2)[0].trainIdx  && 
+				if ((*matchIterator1)[0].queryIdx == (*matchIterator2)[0].trainIdx  &&
 					(*matchIterator2)[0].queryIdx == (*matchIterator1)[0].trainIdx) {
 
 						// add symmetrical match
@@ -149,12 +152,12 @@ class RobustMatcher {
 	  // Identify good matches using RANSAC
 	  // Return fundemental matrix
 	  cv::Mat ransacTest(const std::vector<cv::DMatch>& matches,
-		                 const std::vector<cv::KeyPoint>& keypoints1, 
+		                 const std::vector<cv::KeyPoint>& keypoints1,
 						 const std::vector<cv::KeyPoint>& keypoints2,
 					     std::vector<cv::DMatch>& outMatches) {
 
-		// Convert keypoints into Point2f	
-		std::vector<cv::Point2f> points1, points2;	
+		// Convert keypoints into Point2f
+		std::vector<cv::Point2f> points1, points2;
 		for (std::vector<cv::DMatch>::const_iterator it= matches.begin();
 			 it!= matches.end(); ++it) {
 
@@ -172,11 +175,11 @@ class RobustMatcher {
 		std::vector<uchar> inliers(points1.size(),0);
 		cv::Mat fundemental= cv::findFundamentalMat(
 			cv::Mat(points1),cv::Mat(points2), // matching points
-		    inliers,      // match status (inlier ou outlier)  
+		    inliers,      // match status (inlier ou outlier)
 		    CV_FM_RANSAC, // RANSAC method
 		    distance,     // distance to epipolar line
 		    confidence);  // confidence probability
-	
+
 		// extract the surviving (inliers) matches
 		std::vector<uchar>::const_iterator itIn= inliers.begin();
 		std::vector<cv::DMatch>::const_iterator itM= matches.begin();
@@ -194,10 +197,10 @@ class RobustMatcher {
 		if (refineF) {
 		// The F matrix will be recomputed with all accepted matches
 
-			// Convert keypoints into Point2f for final F computation	
+			// Convert keypoints into Point2f for final F computation
 			points1.clear();
 			points2.clear();
-	
+
 			for (std::vector<cv::DMatch>::const_iterator it= outMatches.begin();
 				 it!= outMatches.end(); ++it) {
 
@@ -222,7 +225,7 @@ class RobustMatcher {
 
 	  // Match feature points using symmetry test and RANSAC
 	  // returns fundemental matrix
-	  cv::Mat match(cv::Mat& image1, cv::Mat& image2, // input images 
+	  cv::Mat match(cv::Mat& image1, cv::Mat& image2, // input images
 		  std::vector<cv::DMatch>& matches, // output matches and keypoints
 		  std::vector<cv::KeyPoint>& keypoints1, std::vector<cv::KeyPoint>& keypoints2) {
 
@@ -242,21 +245,21 @@ class RobustMatcher {
 
 		// 2. Match the two image descriptors
 
-		// Construction of the matcher 
-		cv::BruteForceMatcher<cv::L2<float>> matcher;
+		// Construction of the matcher
+		cv::BruteForceMatcher<cv::L2<float> > matcher;
 
 		// from image 1 to image 2
 		// based on k nearest neighbours (with k=2)
-		std::vector<std::vector<cv::DMatch>> matches1;
-		matcher.knnMatch(descriptors1,descriptors2, 
-			matches1, // vector of matches (up to 2 per entry) 
+		std::vector<std::vector<cv::DMatch> > matches1;
+		matcher.knnMatch(descriptors1,descriptors2,
+			matches1, // vector of matches (up to 2 per entry)
 			2);		  // return 2 nearest neighbours
 
 		// from image 2 to image 1
 		// based on k nearest neighbours (with k=2)
-		std::vector<std::vector<cv::DMatch>> matches2;
-		matcher.knnMatch(descriptors2,descriptors1, 
-			matches2, // vector of matches (up to 2 per entry) 
+		std::vector<std::vector<cv::DMatch> > matches2;
+		matcher.knnMatch(descriptors2,descriptors1,
+			matches2, // vector of matches (up to 2 per entry)
 			2);		  // return 2 nearest neighbours
 
 		std::cout << "Number of matched points 1->2: " << matches1.size() << std::endl;
