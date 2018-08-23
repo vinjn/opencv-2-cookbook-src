@@ -11,3 +11,8 @@
 *.lai
 *.la
 *.a
+
+bin/
+gmake/
+vs*/
+xcode*/

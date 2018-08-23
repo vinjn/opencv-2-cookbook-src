@@ -36,10 +36,10 @@ int main() {
 	std::cout << "size: " << image.size().height << " , " 
           << image.size().width << std::endl;
 	// open image
-	image=  cv::imread("img.jpg");
+	image=  cv::imread("../images/image.jpg");
 	// check if image has been successfully read
 	if (!image.data) { 
-		// no image has been created…
+		// no image has been created?
 		return 0;
 	}
 	// print image size

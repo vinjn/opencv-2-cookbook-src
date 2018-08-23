@@ -19,10 +19,7 @@
 #include <vector>
 using namespace std;
 
-#include <opencv2\core\core.hpp>
-#include <opencv2\highgui\highgui.hpp>
-#include <opencv2\imgproc\imgproc.hpp>
-#include <opencv2\video\tracking.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "objectFinder.h"
 #include "colorhistogram.h"
@@ -30,7 +27,7 @@ using namespace std;
 int main()
 {
 	// Read reference image
-	cv::Mat image= cv::imread("../baboon1.jpg");
+	cv::Mat image= cv::imread("../images/baboon1.jpg");
 	if (!image.data)
 		return 0; 
 
@@ -52,7 +49,7 @@ int main()
 	finder.setThreshold(0.2f);
 
 	// Second image
-	image= cv::imread("../baboon3.jpg");
+	image= cv::imread("../images/baboon3.jpg");
 
  	// Display image
 	cv::namedWindow("Image 2");

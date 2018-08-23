@@ -23,7 +23,7 @@
 int main()
 {
 	// Read input image
-	cv::Mat image= cv::imread("../building.jpg",0);
+	cv::Mat image= cv::imread("../images/building.jpg",0);
 	if (!image.data)
 		return 0; 
 
@@ -60,7 +60,7 @@ int main()
 	cv::imshow("Corners on Image",image);
 
 	// Read and display image of square
-	image= cv::imread("../square.bmp",0);
+	image= cv::imread("../images/square.png",0);
 	cv::namedWindow("Square Image");
 	cv::imshow("Square Image",image);
 

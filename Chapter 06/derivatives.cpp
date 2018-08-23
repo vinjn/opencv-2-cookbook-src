@@ -25,7 +25,7 @@
 int main()
 {
 	// Read input image
-	cv::Mat image= cv::imread("../boldt.jpg",0);
+	cv::Mat image= cv::imread("../images/boldt.jpg",0);
 	if (!image.data)
 		return 0; 
 

@@ -18,8 +18,7 @@
 #include <iostream>
 using namespace std;
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include "histogram.h"
 #include "objectFinder.h"
@@ -28,7 +27,7 @@ using namespace std;
 int main()
 {
 	// Read input image
-	cv::Mat image= cv::imread("../waves.jpg",0);
+	cv::Mat image= cv::imread("../images/waves.jpg",0);
 	if (!image.data)
 		return 0; 
 
@@ -47,7 +46,7 @@ int main()
 	cv::imshow("Reference Hist",h.getHistogramImage(imageROI));
 
 	// Create the objectfinder
-	ContentFinder finder;
+    ObjectFinder finder;
 	finder.setHistogram(hist);
 
 	finder.setThreshold(-1.0f);
@@ -78,7 +77,7 @@ int main()
 	cv::imshow("Detection Result",result1);
 
 	// Second test image
-	cv::Mat image2= cv::imread("../dog.jpg",0);
+	cv::Mat image2= cv::imread("../images/dog.jpg",0);
 	cv::Mat result2;
 	result2= finder.find(image2);
 
@@ -88,7 +87,7 @@ int main()
 
 	// Load color image
 	ColorHistogram hc;
-	cv::Mat color= cv::imread("../waves.jpg");
+	cv::Mat color= cv::imread("../images/waves.jpg");
 	color= hc.colorReduce(color,32);
 	cv::namedWindow("Color Image");
 	cv::imshow("Color Image",color);
@@ -110,7 +109,7 @@ int main()
 	cv::imshow("Color Backproject Result",result1);
 
 	// Second color image
-	cv::Mat color2= cv::imread("../dog.jpg");
+	cv::Mat color2= cv::imread("../images/dog.jpg");
 	color2= hc.colorReduce(color2,32);
 
 	// Get back-projection of color histogram
@@ -120,7 +119,7 @@ int main()
 	cv::imshow("Result color (2)",result2);
 
 	// Get ab color histogram
-	color= cv::imread("../waves.jpg");
+	color= cv::imread("../images/waves.jpg");
 	imageROI= color(cv::Rect(0,0,165,75)); // blue sky area
 	cv::MatND colorhist= hc.getabHistogram(imageROI);
 
@@ -139,7 +138,7 @@ int main()
 	cv::imshow("Result ab (1)",result1);
 
 	// Second color image
-	color2= cv::imread("../dog.jpg");
+	color2= cv::imread("../images/dog.jpg");
 
 	cv::namedWindow("Color Image (2)");
 	cv::imshow("Color Image (2)",color2);
@@ -152,7 +151,7 @@ int main()
 	cv::imshow("Result ab (2)",result2);
 
 	// Get Hue color histogram
-	color= cv::imread("../waves.jpg");
+	color= cv::imread("../images/waves.jpg");
 	imageROI= color(cv::Rect(0,0,165,75)); // blue sky area
 	colorhist= hc.getHueHistogram(imageROI);
 
@@ -171,7 +170,7 @@ int main()
 	cv::imshow("Result Hue (1)",result1);
 
 	// Second color image
-	color2= cv::imread("../dog.jpg");
+	color2= cv::imread("../images/dog.jpg");
 
 	cv::cvtColor(color2, hsv, CV_BGR2HSV);
 

@@ -33,7 +33,7 @@ int main()
 	FeatureTracker tracker;
 
 	// Open video file
-	processor.setInput("../bike.avi");
+	processor.setInput("../images/bike.avi");
 
 	// set frame processor
 	processor.setFrameProcessor(&tracker);
@@ -50,7 +50,7 @@ int main()
 	cv::waitKey();
 	/*
 		// Open the video file
-    cv::VideoCapture capture("../bike.avi");
+    cv::VideoCapture capture("../images/bike.avi");
 	// check if video successfully opened
 	if (!capture.isOpened())
 		return 1;
@@ -138,9 +138,9 @@ int main()
 	// Create instance
 	VideoProcessor processor;
 	// Open video file
-	processor.setInput("../bike.avi");
+	processor.setInput("../images/bike.avi");
 	// Output filename
-//	processor.setOutput("../output/bikeOut",".jpg");
+//	processor.setOutput("bikeOut",".jpg");
 
 	// Declare a window to display the video
 	processor.displayInput("Current Frame");

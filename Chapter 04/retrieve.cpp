@@ -18,7 +18,7 @@
 #include <iostream>
 using namespace std;
 
-#include <opencv2\core\core.hpp>
+#include <opencv2/core/core.hpp>
 #include <opencv2\highgui\highgui.hpp>
 
 #include "imageComparator.h"
@@ -26,7 +26,7 @@ using namespace std;
 int main()
 {
 	// Read reference image
-	cv::Mat image= cv::imread("../waves.jpg");
+	cv::Mat image= cv::imread("../images/waves.jpg");
 	if (!image.data)
 		return 0; 
 
@@ -38,35 +38,35 @@ int main()
 	c.setReferenceImage(image);
 
 	// Read an image and compare it with reference
-	cv::Mat input= cv::imread("../dog.jpg");
+	cv::Mat input= cv::imread("../images/dog.jpg");
 	cout << "waves vs dog: " << c.compare(input) << endl;
 
 	// Read an image and compare it with reference
-	input= cv::imread("../marais.jpg");
+	input= cv::imread("../images/marais.jpg");
 	cout << "waves vs marais: " << c.compare(input) << endl;
 
 	// Read an image and compare it with reference
-	input= cv::imread("../bear.jpg");
+	input= cv::imread("../images/bear.jpg");
 	cout << "waves vs bear: " << c.compare(input) << endl;
 
 	// Read an image and compare it with reference
-	input= cv::imread("../beach.jpg");
+	input= cv::imread("../images/beach.jpg");
 	cout << "waves vs beach: " << c.compare(input) << endl;
 
 	// Read an image and compare it with reference
-	input= cv::imread("../polar.jpg");
+	input= cv::imread("../images/polar.jpg");
 	cout << "waves vs polar: " << c.compare(input) << endl;
 
 	// Read an image and compare it with reference
-	input= cv::imread("../moose.jpg");
+	input= cv::imread("../images/moose.jpg");
 	cout << "waves vs moose: " << c.compare(input) << endl;
 
 	// Read an image and compare it with reference
-	input= cv::imread("../lake.jpg");
+	input= cv::imread("../images/lake.jpg");
 	cout << "waves vs lake: " << c.compare(input) << endl;
 
 	// Read an image and compare it with reference
-	input= cv::imread("../fundy.jpg");
+	input= cv::imread("../images/fundy.jpg");
 	cout << "waves vs fundy: " << c.compare(input) << endl;
 
 	cv::waitKey();

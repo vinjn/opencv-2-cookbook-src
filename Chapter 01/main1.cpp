@@ -21,7 +21,7 @@
 int main() {
 
 	// read an image
-	cv::Mat image= cv::imread("img.jpg");	
+	cv::Mat image= cv::imread("../images/image.jpg");	
 	// create image window named "My Image"
 	cv::namedWindow("My Image");
 	// show the image on window

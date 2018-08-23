@@ -27,8 +27,8 @@
 int main()
 {
 	// Read input images
-	cv::Mat image1= cv::imread("../canal1.jpg",0);
-	cv::Mat image2= cv::imread("../canal2.jpg",0);
+	cv::Mat image1= cv::imread("../images/canal1.jpg",0);
+	cv::Mat image2= cv::imread("../images/canal2.jpg",0);
 	if (!image1.data || !image2.data)
 		return 0; 
 
@@ -43,8 +43,8 @@ int main()
 	rmatcher.setConfidenceLevel(0.98);
 	rmatcher.setMinDistanceToEpipolar(1.0);
 	rmatcher.setRatio(0.65f);
-	cv::Ptr<cv::FeatureDetector> pfd= new cv::SurfFeatureDetector(10); 
-	rmatcher.setFeatureDetector(pfd);
+    auto pfd = cv::BRISK::create();
+    rmatcher.setFeatureDetector(pfd);
 
 	// Match the two images
 	std::vector<cv::DMatch> matches;
@@ -64,7 +64,7 @@ int main()
 	// Convert keypoints into Point2f	
 	std::vector<cv::Point2f> points1, points2;
 	
-	for (std::vector<cv::DMatch>::const_iterator it= matches.begin();
+	for (auto it= matches.begin();
 			 it!= matches.end(); ++it) {
 
 			 // Get the position of left keypoints
@@ -83,7 +83,7 @@ int main()
 	std::vector<cv::Vec3f> lines1; 
 	cv::computeCorrespondEpilines(cv::Mat(points1),1,fundemental,lines1);
 		
-	for (vector<cv::Vec3f>::const_iterator it= lines1.begin();
+	for (auto it= lines1.begin();
 			 it!=lines1.end(); ++it) {
 
 			 cv::line(image2,cv::Point(0,-(*it)[2]/(*it)[1]),
@@ -94,7 +94,7 @@ int main()
 	std::vector<cv::Vec3f> lines2; 
 	cv::computeCorrespondEpilines(cv::Mat(points2),2,fundemental,lines2);
 	
-	for (vector<cv::Vec3f>::const_iterator it= lines2.begin();
+	for (auto it= lines2.begin();
 		     it!=lines2.end(); ++it) {
 
 			 cv::line(image1,cv::Point(0,-(*it)[2]/(*it)[1]),

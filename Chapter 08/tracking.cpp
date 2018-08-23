@@ -25,8 +25,8 @@
 int main()
 {
 	// Read input images
-	cv::Mat image1= cv::imread("../church01.jpg",0);
-	cv::Mat image2= cv::imread("../church02.jpg",0);
+	cv::Mat image1= cv::imread("../images/church01.jpg",0);
+	cv::Mat image2= cv::imread("../images/church02.jpg",0);
 	if (!image1.data || !image2.data)
 		return 0; 
 
@@ -41,11 +41,11 @@ int main()
 	std::vector<cv::KeyPoint> keypoints2;
 
 	// Construction of the SURF feature detector 
-	cv::SurfFeatureDetector surf(3000);
+	auto surf = cv::ORB::create();
 
 	// Detection of the SURF features
-	surf.detect(image1,keypoints1);
-	surf.detect(image2,keypoints2);
+	surf->detect(image1,keypoints1);
+	surf->detect(image2,keypoints2);
 
 	std::cout << "Number of SURF points (1): " << keypoints1.size() << std::endl;
 	std::cout << "Number of SURF points (2): " << keypoints2.size() << std::endl;
@@ -59,22 +59,19 @@ int main()
 	cv::namedWindow("Left SURF Features");
 	cv::imshow("Left SURF Features",imageKP);
 
-	// Construction of the SURF descriptor extractor 
-	cv::SurfDescriptorExtractor surfDesc;
-
 	// Extraction of the SURF descriptors
 	cv::Mat descriptors1, descriptors2;
-	surfDesc.compute(image1,keypoints1,descriptors1);
-	surfDesc.compute(image2,keypoints2,descriptors2);
+    surf->compute(image1,keypoints1,descriptors1);
+    surf->compute(image2,keypoints2,descriptors2);
 
 	std::cout << "descriptor matrix size: " << descriptors1.rows << " by " << descriptors1.cols << std::endl;
 
 	// Construction of the matcher 
-	cv::BruteForceMatcher<cv::L2<float>> matcher;
+    auto matcher = cv::BFMatcher::create();
 
 	// Match the two image descriptors
 	std::vector<cv::DMatch> matches;
-	matcher.match(descriptors1,descriptors2, matches);
+	matcher->match(descriptors1,descriptors2, matches);
 
 	std::cout << "Number of matched points: " << matches.size() << std::endl;
 

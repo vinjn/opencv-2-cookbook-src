@@ -26,8 +26,8 @@ int main()
 	cv::Mat image1;
 	cv::Mat image2;
 
-	image1= cv::imread("boldt.jpg");
-	image2= cv::imread("rain.jpg");
+	image1= cv::imread("../images/boldt.jpg");
+	image2= cv::imread("../images/rain.jpg");
 	if (!image1.data)
 		return 0; 
 	if (!image2.data)
@@ -50,7 +50,7 @@ int main()
 	cv::namedWindow("result with operators");
 	cv::imshow("result with operators",result);
 
-	image2= cv::imread("rain.jpg",0);
+	image2= cv::imread("../images/rain.jpg",0);
 
 	// create vector of 3 images
 	std::vector<cv::Mat> planes;
@@ -65,8 +65,8 @@ int main()
 	cv::imshow("Result on blue channel",result);
 
 	// read images
-	cv::Mat image= cv::imread("boldt.jpg");
-	cv::Mat logo= cv::imread("logo.bmp");
+	cv::Mat image= cv::imread("../images/boldt.jpg");
+	cv::Mat logo= cv::imread("../images/logo.bmp");
 
 	// define image ROI
 	cv::Mat imageROI;
@@ -80,14 +80,14 @@ int main()
 	cv::imshow("with logo",image);
 
 	// read images
-	image= cv::imread("boldt.jpg");
-	logo= cv::imread("logo.bmp");
+	image= cv::imread("../images/boldt.jpg");
+	logo= cv::imread("../images/logo.bmp");
 
 	// define ROI
 	imageROI= image(cv::Rect(385,270,logo.cols,logo.rows));
 
 	// load the mask (must be gray-level)
-	cv::Mat mask= cv::imread("logo.bmp",0);
+	cv::Mat mask= cv::imread("../images/logo.bmp",0);
 
 	// copy to ROI with mask
 	logo.copyTo(imageROI,mask);
@@ -97,8 +97,8 @@ int main()
 	cv::imshow("with logo 2",image);
 
 	// read images
-	logo= cv::imread("logo.bmp",0);
-	image1= cv::imread("boldt.jpg");
+	logo= cv::imread("../images/logo.bmp",0);
+	image1= cv::imread("../images/boldt.jpg");
 
 	// split 3-channel image into 3 1-channel images
 	std::vector<cv::Mat> channels;
