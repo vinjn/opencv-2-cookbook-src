@@ -17,7 +17,8 @@
 
 #include "colordetector.h"
 
-cv::Mat ColorDetector::process(const cv::Mat &image) {
+cv::Mat ColorDetector::process(const cv::Mat& image)
+{
 
     // re-allocate binary map if necessary
     // same size as input image, but 1-channel
@@ -29,17 +30,19 @@ cv::Mat ColorDetector::process(const cv::Mat &image) {
     auto itout = result.begin<uchar>();
 
     // for each pixel
-    for (; it != itend; ++it, ++itout) {
+    for (; it != itend; ++it, ++itout)
+    {
 
         // process each pixel ---------------------
 
-          // compute distance from target color
-        if (getDistance(*it) < minDist) {
+        // compute distance from target color
+        if (getDistance(*it) < minDist)
+        {
 
             *itout = 255;
-
         }
-        else {
+        else
+        {
 
             *itout = 0;
         }
@@ -49,4 +52,3 @@ cv::Mat ColorDetector::process(const cv::Mat &image) {
 
     return result;
 }
-

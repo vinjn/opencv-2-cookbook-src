@@ -2,6 +2,9 @@
 
 local action = _ACTION or ""
 local OPENCV_PATH = "d:/opencv/build"
+-- OPENCV_PATH = "d:/opencv4/build"
+
+OPENCV_VER = 666
 
 solution "opencv-cookbook"
     location (action)
@@ -12,12 +15,29 @@ solution "opencv-cookbook"
     os.mkdir("bin")
     targetdir ("bin")
 
+    -- TODO: it's ugly but it works
+    if os.isfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world330.dll")) then
+        OPENCV_VER = 330
+    elseif os.isfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world331.dll")) then
+        OPENCV_VER = 331
+    elseif os.isfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world340.dll")) then
+        OPENCV_VER = 340
+    elseif os.isfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world341.dll")) then
+        OPENCV_VER = 341
+    elseif os.isfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world342.dll")) then
+        OPENCV_VER = 342
+    elseif os.isfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world343.dll")) then
+        OPENCV_VER = 343
+    elseif os.isfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world400.dll")) then
+        OPENCV_VER = 400
+    end
+
     filter "action:vs*"
         defines { "_CRT_SECURE_NO_WARNINGS" }
-        if not os.isfile("bin/opencv_world340d.dll") then
-            os.copyfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world340d.dll"), "bin/opencv_world340d.dll")
-            os.copyfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world340.dll"), "bin/opencv_world340.dll")
-            os.copyfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_ffmpeg340_64.dll"), "bin/opencv_ffmpeg340_64.dll")
+        if not os.isfile("bin/opencv_world" .. OPENCV_VER .. "d.dll") then
+            os.copyfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world" .. OPENCV_VER .. "d.dll"), "bin/opencv_world" .. OPENCV_VER .. "d.dll")
+            os.copyfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_world" .. OPENCV_VER .. ".dll"), "bin/opencv_world" .. OPENCV_VER .. ".dll")
+            os.copyfile(path.join(OPENCV_PATH, "x64/vc14/bin/opencv_ffmpeg"  .. OPENCV_VER .. "_64.dll"), "bin/opencv_ffmpeg"  .. OPENCV_VER .. "_64.dll")
         end
 
     filter "system:macosx"
@@ -56,12 +76,12 @@ solution "opencv-cookbook"
 
             configuration "Debug"
                 links {
-                    "opencv_world340d.lib",
+                    "opencv_world" .. OPENCV_VER .. "d",
                 }
             
             configuration "Release"
                 links {
-                    "opencv_world340.lib",
+                    "opencv_world".. OPENCV_VER,
                 }
     end
 

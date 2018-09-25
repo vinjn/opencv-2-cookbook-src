@@ -16,22 +16,24 @@
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include "videoprocessor.h"
 
-void draw(cv::Mat& img, cv::Mat& out) {
+void draw(cv::Mat& img, cv::Mat& out)
+{
 
     img.copyTo(out);
     cv::circle(out, cv::Point(100, 100), 5, cv::Scalar(255, 0, 0), 2);
 }
 
-void canny(cv::Mat& img, cv::Mat& out) {
+void canny(cv::Mat& img, cv::Mat& out)
+{
 
     // Convert to gray
-    cv::cvtColor(img, out, CV_BGR2GRAY);
+    cv::cvtColor(img, out, cv::COLOR_BGR2GRAY);
     // Compute Canny edges
     cv::Canny(out, out, 100, 200);
     // Invert the image
@@ -47,7 +49,7 @@ int main()
         return 1;
 
     // Get the frame rate
-    double rate = capture.get(CV_CAP_PROP_FPS);
+    double rate = capture.get(cv::CAP_PROP_FPS);
 
     bool stop(false);
     cv::Mat frame; // current video frame
@@ -58,7 +60,8 @@ int main()
     int delay = 1000 / rate;
 
     // for all frames in video
-    while (!stop) {
+    while (!stop)
+    {
 
         // read next frame if any
         if (!capture.read(frame))
@@ -111,7 +114,7 @@ int main()
     // No processing
     processor.dontCallProcess();
     // Output filename
-//	processor.setOutput("bikeOut",".jpg");
+    //	processor.setOutput("bikeOut",".jpg");
     char codec[4];
     processor.setOutput("bike.avi", processor.getCodec(codec), processor.getFrameRate());
     std::cout << "Codec: " << codec[0] << codec[1] << codec[2] << codec[3] << std::endl;

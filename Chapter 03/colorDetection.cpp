@@ -15,8 +15,8 @@
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
 \*------------------------------------------------------------------------------------------*/
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 
 #include "colordetector.h"
 
@@ -33,7 +33,7 @@ int main()
     // set input parameters
     cdetect.setTargetColor(130, 190, 230); // here blue sky
 
-   // Read image, process it and display the result
+    // Read image, process it and display the result
     cv::namedWindow("result");
     cv::imshow("result", cdetect.process(image));
 
@@ -41,4 +41,3 @@ int main()
 
     return 0;
 }
-

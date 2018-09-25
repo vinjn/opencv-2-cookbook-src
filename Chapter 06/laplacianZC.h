@@ -1,17 +1,18 @@
 /*------------------------------------------------------------------------------------------*\
-   This file contains material supporting chapter 6 of the cookbook:  
-   Computer Vision Programming using the OpenCV Library. 
+   This file contains material supporting chapter 6 of the cookbook:
+   Computer Vision Programming using the OpenCV Library.
    by Robert Laganiere, Packt Publishing, 2011.
 
-   This program is free software; permission is hereby granted to use, copy, modify, 
-   and distribute this source code, or portions thereof, for any purpose, without fee, 
-   subject to the restriction that the copyright notice may not be removed 
-   or altered from any source or altered source distribution. 
-   The software is released on an as-is basis and without any warranties of any kind. 
-   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
-   The author disclaims all warranties with regard to this software, any use, 
+   This program is free software; permission is hereby granted to use, copy, modify,
+   and distribute this source code, or portions thereof, for any purpose, without fee,
+   subject to the restriction that the copyright notice may not be removed
+   or altered from any source or altered source distribution.
+   The software is released on an as-is basis and without any warranties of any kind.
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure.
+   The author disclaims all warranties with regard to this software, any use,
    and any consequent failure, is purely the responsibility of the user.
  
+
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
 \*------------------------------------------------------------------------------------------*/
 
@@ -21,134 +22,131 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-class LaplacianZC {
+class LaplacianZC
+{
 
   private:
+    // original image
+    cv::Mat img;
 
-	  // original image
-	  cv::Mat img;
-
-	  // 32-bit float image containing the Laplacian
-	  cv::Mat laplace;
-	  // Aperture size of the laplacian kernel
-	  int aperture;
+    // 32-bit float image containing the Laplacian
+    cv::Mat laplace;
+    // Aperture size of the laplacian kernel
+    int aperture;
 
   public:
+    LaplacianZC() : aperture(3) {}
 
-	  LaplacianZC() : aperture(3) {}
+    // Set the aperture size of the kernel
+    void setAperture(int a) { aperture = a; }
 
-	  // Set the aperture size of the kernel
-	  void setAperture(int a) {
+    // Get the aperture size of the kernel
+    int getAperture() const { return aperture; }
 
-		  aperture= a;
-	  }
+    // Compute the floating point Laplacian
+    cv::Mat computeLaplacian(const cv::Mat& image)
+    {
 
-	  // Get the aperture size of the kernel
-	  int getAperture() const {
+        // Compute Laplacian
+        cv::Laplacian(image, laplace, CV_32F, aperture);
 
-		  return aperture;
-	  }
+        // Keep local copy of the image
+        // (used for zero-crossings)
+        img = image.clone();
 
-	  // Compute the floating point Laplacian
-	  cv::Mat computeLaplacian(const cv::Mat& image) {
+        return laplace;
+    }
 
+    // Get the Laplacian result in 8-bit image
+    // zero corresponds to gray level 128
+    // if no scale is provided, then the max value will be
+    // scaled to intensity 255
+    // You must call computeLaplacian before calling this method
+    cv::Mat getLaplacianImage(double scale = -1.0)
+    {
 
-		  // Compute Laplacian
-		  cv::Laplacian(image,laplace,CV_32F,aperture);
+        if (scale < 0)
+        {
 
-		  // Keep local copy of the image
-		  // (used for zero-crossings)
-		  img= image.clone();
+            double lapmin, lapmax;
+            cv::minMaxLoc(laplace, &lapmin, &lapmax);
 
-		  return laplace;
-	  }
+            scale = 127 / std::max(-lapmin, lapmax);
+        }
 
-	  // Get the Laplacian result in 8-bit image 
-	  // zero corresponds to gray level 128
-	  // if no scale is provided, then the max value will be
-	  // scaled to intensity 255
-	  // You must call computeLaplacian before calling this method
-	  cv::Mat getLaplacianImage(double scale=-1.0) {
+        cv::Mat laplaceImage;
+        laplace.convertTo(laplaceImage, CV_8U, scale, 128);
 
-		  if (scale<0) {
-	
-			  double lapmin, lapmax;
-			  cv::minMaxLoc(laplace,&lapmin,&lapmax);
+        return laplaceImage;
+    }
 
-			  scale= 127/ std::max(-lapmin,lapmax);
-		  }
+    // Get a binary image of the zero-crossings
+    // if the product of the two adjascent pixels is
+    // less than threshold then this zero-crossing will be ignored
+    cv::Mat getZeroCrossings(float threshold = 1.0)
+    {
 
-		  cv::Mat laplaceImage;
-		  laplace.convertTo(laplaceImage,CV_8U,scale,128);
+        // Create the iterators
+        cv::Mat_<float>::const_iterator it = laplace.begin<float>() + laplace.step1();
+        cv::Mat_<float>::const_iterator itend = laplace.end<float>();
+        cv::Mat_<float>::const_iterator itup = laplace.begin<float>();
 
-		  return laplaceImage;
-	  }
+        // Binary image initialize to white
+        cv::Mat binary(laplace.size(), CV_8U, cv::Scalar(255));
+        cv::Mat_<uchar>::iterator itout = binary.begin<uchar>() + binary.step1();
 
-	  // Get a binary image of the zero-crossings
-	  // if the product of the two adjascent pixels is
-	  // less than threshold then this zero-crossing will be ignored
-	  cv::Mat getZeroCrossings(float threshold=1.0) {
+        // negate the input threshold value
+        threshold *= -1.0;
 
-		  // Create the iterators
-		  cv::Mat_<float>::const_iterator it= laplace.begin<float>()+laplace.step1();
-		  cv::Mat_<float>::const_iterator itend= laplace.end<float>();
-		  cv::Mat_<float>::const_iterator itup= laplace.begin<float>();
+        for (; it != itend; ++it, ++itup, ++itout)
+        {
 
-		  // Binary image initialize to white
-		  cv::Mat binary(laplace.size(),CV_8U,cv::Scalar(255));
-		  cv::Mat_<uchar>::iterator itout= binary.begin<uchar>()+binary.step1();
+            // if the product of two adjascent pixel is negative
+            // then there is a sign change
+            if (*it * *(it - 1) < threshold)
+                *itout = 0; // horizontal zero-crossing
+            else if (*it * *itup < threshold)
+                *itout = 0; // vertical zero-crossing
+        }
 
-		  // negate the input threshold value
-		  threshold *= -1.0;
+        return binary;
+    }
 
-		  for ( ; it!= itend; ++it, ++itup, ++itout) {
+    // Get a binary image of the zero-crossings
+    // if the product of the two adjacent pixels is
+    // less than threshold then this zero-crossing will be ignored
+    cv::Mat getZeroCrossingsWithSobel(float threshold)
+    {
 
-			  // if the product of two adjascent pixel is negative
-			  // then there is a sign change
-			  if (*it * *(it-1) < threshold)
-				  *itout= 0; // horizontal zero-crossing
-			  else if (*it * *itup < threshold)
-				  *itout= 0; // vertical zero-crossing
-		  }
+        cv::Mat sx;
+        cv::Sobel(img, sx, CV_32F, 1, 0, 1);
+        cv::Mat sy;
+        cv::Sobel(img, sy, CV_32F, 0, 1, 1);
 
-		  return binary;
-	  }
+        // Create the iterators
+        cv::Mat_<float>::const_iterator it = laplace.begin<float>() + laplace.step1();
+        cv::Mat_<float>::const_iterator itend = laplace.end<float>();
+        cv::Mat_<float>::const_iterator itup = laplace.begin<float>();
+        cv::Mat_<float>::const_iterator itx = sx.begin<float>() + sx.step1();
+        cv::Mat_<float>::const_iterator ity = sy.begin<float>() + sy.step1();
 
-	  // Get a binary image of the zero-crossings
-	  // if the product of the two adjacent pixels is
-	  // less than threshold then this zero-crossing will be ignored
-	  cv::Mat getZeroCrossingsWithSobel(float threshold) {
+        // Binary image initialize to white
+        cv::Mat binary(laplace.size(), CV_8U, cv::Scalar(255));
+        cv::Mat_<uchar>::iterator itout = binary.begin<uchar>() + binary.step1();
 
-		  cv::Mat sx;
-		  cv::Sobel(img,sx,CV_32F,1,0,1);
-		  cv::Mat sy;
-		  cv::Sobel(img,sy,CV_32F,0,1,1);
+        for (; it != itend; ++it, ++itup, ++itout, ++itx, ++ity)
+        {
 
-		  // Create the iterators
-		  cv::Mat_<float>::const_iterator it= laplace.begin<float>()+laplace.step1();
-		  cv::Mat_<float>::const_iterator itend= laplace.end<float>();
-		  cv::Mat_<float>::const_iterator itup= laplace.begin<float>();
-		  cv::Mat_<float>::const_iterator itx= sx.begin<float>()+sx.step1();
-		  cv::Mat_<float>::const_iterator ity= sy.begin<float>()+sy.step1();
+            // if the product of two adjacent pixel is negative
+            // then there is a sign change
+            if (*it * *(it - 1) < 0.0 && fabs(*ity) > threshold)
+                *itout = 0; // horizontal zero-crossing
+            else if (*it * *itup < 0.0 && fabs(*ity) > threshold)
+                *itout = 0; // vertical zero-crossing
+        }
 
-		  // Binary image initialize to white
-		  cv::Mat binary(laplace.size(),CV_8U,cv::Scalar(255));
-		  cv::Mat_<uchar>::iterator itout= binary.begin<uchar>()+binary.step1();
-
-		  for ( ; it!= itend; ++it, ++itup, ++itout, ++itx, ++ity) {
-
-			  // if the product of two adjacent pixel is negative
-			  // then there is a sign change
-			  if (*it * *(it-1) < 0.0 && fabs(*ity) > threshold)
-				  *itout= 0; // horizontal zero-crossing
-			  else if (*it * *itup < 0.0 && fabs(*ity) > threshold)
-				  *itout= 0; // vertical zero-crossing
-		  }
-
-		  return binary;
-	  }
-
+        return binary;
+    }
 };
-
 
 #endif

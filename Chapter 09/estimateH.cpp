@@ -15,14 +15,14 @@
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
 \*------------------------------------------------------------------------------------------*/
 
-#include <iostream>
-#include <vector>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
 #include "matcher.h"
+#include <iostream>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/features2d.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <vector>
 
 int main()
 {
@@ -53,18 +53,18 @@ int main()
 
     // draw the matches
     cv::Mat imageMatches;
-    cv::drawMatches(image1, keypoints1,  // 1st image and its keypoints
-        image2, keypoints2,  // 2nd image and its keypoints
-        matches,			// the matches
-        imageMatches,		// the image produced
-        cv::Scalar(255, 255, 255)); // color of the lines
+    cv::drawMatches(image1, keypoints1,         // 1st image and its keypoints
+                    image2, keypoints2,         // 2nd image and its keypoints
+                    matches,                    // the matches
+                    imageMatches,               // the image produced
+                    cv::Scalar(255, 255, 255)); // color of the lines
     cv::namedWindow("Matches");
     cv::imshow("Matches", imageMatches);
 
     // Convert keypoints into Point2f
     std::vector<cv::Point2f> points1, points2;
-    for (auto it = matches.begin();
-        it != matches.end(); ++it) {
+    for (auto it = matches.begin(); it != matches.end(); ++it)
+    {
 
         // Get the position of left keypoints
         float x = keypoints1[it->queryIdx].pt.x;
@@ -80,16 +80,17 @@ int main()
 
     // Find the homography between image 1 and image 2
     std::vector<uchar> inliers(points1.size(), 0);
-    cv::Mat homography = cv::findHomography(
-        cv::Mat(points1), cv::Mat(points2), // corresponding points
-        inliers,	// outputed inliers matches 
-        CV_RANSAC,	// RANSAC method
-        1.);	    // max distance to reprojection point
+    cv::Mat homography =
+        cv::findHomography(cv::Mat(points1), cv::Mat(points2), // corresponding points
+                           inliers,                            // outputed inliers matches
+                           cv::RANSAC,                          // RANSAC method
+                           1.);                                // max distance to reprojection point
 
     // Draw the inlier points
     auto itPts = points1.begin();
     auto itIn = inliers.begin();
-    while (itPts != points1.end()) {
+    while (itPts != points1.end())
+    {
 
         // draw a circle at each inlier location
         if (*itIn)
@@ -101,7 +102,8 @@ int main()
 
     itPts = points2.begin();
     itIn = inliers.begin();
-    while (itPts != points2.end()) {
+    while (itPts != points2.end())
+    {
 
         // draw a circle at each inlier location
         if (*itIn)
@@ -119,10 +121,10 @@ int main()
 
     // Warp image 1 to image 2
     cv::Mat result;
-    cv::warpPerspective(image1, // input image
-        result,			// output image
-        homography,		// homography
-        cv::Size(2 * image1.cols, image1.rows)); // size of output image
+    cv::warpPerspective(image1,                                  // input image
+                        result,                                  // output image
+                        homography,                              // homography
+                        cv::Size(2 * image1.cols, image1.rows)); // size of output image
 
     // Copy image 1 on the first half of full image
     cv::Mat half(result, cv::Rect(0, 0, image2.cols, image2.rows));

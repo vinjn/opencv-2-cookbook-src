@@ -16,11 +16,11 @@
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
+#include <opencv2/core.hpp>
+#include <opencv2/features2d.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <vector>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/features2d/features2d.hpp>
 
 #include "harrisDetector.h"
 
@@ -38,15 +38,14 @@ int main()
     // Detect Harris Corners
     cv::Mat cornerStrength;
     cv::cornerHarris(image, cornerStrength,
-        3,     // neighborhood size
-        3,     // aperture size
-        0.01); // Harris parameter
+                     3,     // neighborhood size
+                     3,     // aperture size
+                     0.01); // Harris parameter
 
-// threshold the corner strengths
+    // threshold the corner strengths
     cv::Mat harrisCorners;
     double threshold = 0.0001;
-    cv::threshold(cornerStrength, harrisCorners,
-        threshold, 255, cv::THRESH_BINARY_INV);
+    cv::threshold(cornerStrength, harrisCorners, threshold, 255, cv::THRESH_BINARY_INV);
 
     // Display the corners
     cv::namedWindow("Harris Corner Map");
@@ -72,13 +71,14 @@ int main()
     // Compute good features to track
     std::vector<cv::Point2f> corners;
     cv::goodFeaturesToTrack(image, corners,
-        500,	// maximum number of corners to be returned
-        0.01,	// quality level
-        10);	// minimum allowed distance between points
+                            500,  // maximum number of corners to be returned
+                            0.01, // quality level
+                            10);  // minimum allowed distance between points
 
     // for all corners
     auto it = corners.begin();
-    while (it != corners.end()) {
+    while (it != corners.end())
+    {
 
         // draw a circle at each corner location
         cv::circle(image, *it, 3, cv::Scalar(255, 255, 255), 2);
@@ -94,19 +94,18 @@ int main()
 
     // vector of keypoints
     std::vector<cv::KeyPoint> keypoints;
-    // Construction of the Good Feature to Track detector 
-    auto gftt = cv::GFTTDetector::create(
-        500,	// maximum number of corners to be returned
-        0.01,	// quality level
-        10);	// minimum allowed distance between points
+    // Construction of the Good Feature to Track detector
+    auto gftt = cv::GFTTDetector::create(500,  // maximum number of corners to be returned
+                                         0.01, // quality level
+                                         10);  // minimum allowed distance between points
     // point detection using FeatureDetector method
     gftt->detect(image, keypoints);
 
-    cv::drawKeypoints(image,		// original image
-        keypoints,					// vector of keypoints
-        image,						// the resulting image
-        cv::Scalar(255, 255, 255),	// color of the points
-        cv::DrawMatchesFlags::DRAW_OVER_OUTIMG); //drawing flag
+    cv::drawKeypoints(image,                                   // original image
+                      keypoints,                               // vector of keypoints
+                      image,                                   // the resulting image
+                      cv::Scalar(255, 255, 255),               // color of the points
+                      cv::DrawMatchesFlags::DRAW_OVER_OUTIMG); // drawing flag
 
     // Display the corners
     cv::namedWindow("Good Features to Track Detector");
@@ -119,7 +118,8 @@ int main()
     auto fast = cv::FastFeatureDetector::create(40);
     fast->detect(image, keypoints);
 
-    cv::drawKeypoints(image, keypoints, image, cv::Scalar(255, 255, 255), cv::DrawMatchesFlags::DRAW_OVER_OUTIMG);
+    cv::drawKeypoints(image, keypoints, image, cv::Scalar(255, 255, 255),
+                      cv::DrawMatchesFlags::DRAW_OVER_OUTIMG);
 
     // Display the corners
     cv::namedWindow("FAST Features");
@@ -138,7 +138,8 @@ int main()
     // Detect the SURF features
     surf.detect(image, keypoints);
 
-    cv::drawKeypoints(image, keypoints, featureImage, cv::Scalar(255, 255, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::drawKeypoints(image, keypoints, featureImage, cv::Scalar(255, 255, 255),
+                      cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
     // Display the corners
     cv::namedWindow("SURF Features");
@@ -149,15 +150,15 @@ int main()
 
     keypoints.clear();
     // Construct the SURF feature detector object
-    cv::SiftFeatureDetector sift(
-        0.03,  // feature threshold
-        10.);  // threshold to reduce
-               // sensitivity to lines
+    cv::SiftFeatureDetector sift(0.03, // feature threshold
+                                 10.); // threshold to reduce
+                                       // sensitivity to lines
 
     // Detect the SURF features
     sift.detect(image, keypoints);
 
-    cv::drawKeypoints(image, keypoints, featureImage, cv::Scalar(255, 255, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::drawKeypoints(image, keypoints, featureImage, cv::Scalar(255, 255, 255),
+                      cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
     // Display the corners
     cv::namedWindow("SIFT Features");
@@ -173,11 +174,11 @@ int main()
     mser->detect(image, keypoints);
 
     // Draw the keypoints with scale and orientation information
-    cv::drawKeypoints(image,		// original image
-        keypoints,					// vector of keypoints
-        featureImage,				// the resulting image
-        cv::Scalar(255, 255, 255),	// color of the points
-        cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS); //drawing flag
+    cv::drawKeypoints(image,                                      // original image
+                      keypoints,                                  // vector of keypoints
+                      featureImage,                               // the resulting image
+                      cv::Scalar(255, 255, 255),                  // color of the points
+                      cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS); // drawing flag
 
     // Display the corners
     cv::namedWindow("MSER Features");

@@ -16,13 +16,13 @@
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/video/background_segm.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/video.hpp>
 
-#include "videoprocessor.h"
 #include "BGFGSegmentor.h"
+#include "videoprocessor.h"
 
 int main()
 {
@@ -45,7 +45,8 @@ int main()
 
     bool stop(false);
     // for all frames in video
-    while (!stop) {
+    while (!stop)
+    {
 
         // read next frame if any
         if (!capture.read(frame))
@@ -72,7 +73,7 @@ int main()
     // Create video procesor instance
     VideoProcessor processor;
 
-    // Create background/foreground segmentor 
+    // Create background/foreground segmentor
     BGFGSegmentor segmentor;
     segmentor.setThreshold(25);
 

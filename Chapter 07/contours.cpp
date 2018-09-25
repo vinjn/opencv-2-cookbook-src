@@ -16,13 +16,13 @@
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <vector>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
-#include "linefinder.h"
 #include "edgedetector.h"
+#include "linefinder.h"
 
 #define PI 3.1415926
 
@@ -89,27 +89,29 @@ int main()
     std::cout << "Lines detected: " << lines.size() << std::endl;
 
     auto it = lines.begin();
-    while (it != lines.end()) {
+    while (it != lines.end())
+    {
 
         float rho = (*it)[0];   // first element is distance rho
         float theta = (*it)[1]; // second element is angle theta
 
-        if (theta < PI / 4. || theta > 3.*PI / 4.) { // ~vertical line
+        if (theta < PI / 4. || theta > 3. * PI / 4.)
+        { // ~vertical line
 
             // point of intersection of the line with first row
             cv::Point pt1(rho / cos(theta), 0);
             // point of intersection of the line with last row
-            cv::Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
+            cv::Point pt2((rho - result.rows * sin(theta)) / cos(theta), result.rows);
             // draw a white line
             cv::line(result, pt1, pt2, cv::Scalar(255), 1);
-
         }
-        else { // ~horizontal line
+        else
+        { // ~horizontal line
 
-         // point of intersection of the line with first column
+            // point of intersection of the line with first column
             cv::Point pt1(0, rho / sin(theta));
             // point of intersection of the line with last column
-            cv::Point pt2(result.cols, (rho - result.cols*cos(theta)) / sin(theta));
+            cv::Point pt2(result.cols, (rho - result.cols * cos(theta)) / sin(theta));
             // draw a white line
             cv::line(result, pt1, pt2, cv::Scalar(255), 1);
         }
@@ -137,10 +139,11 @@ int main()
     cv::imshow("Detected Lines with HoughP", image);
 
     auto it2 = li.begin();
-    while (it2 != li.end()) {
+    while (it2 != li.end())
+    {
 
-        std::cout << "(" << (*it2)[0] << "," << (*it2)[1] << ")-("
-            << (*it2)[2] << "," << (*it2)[3] << ")" << std::endl;
+        std::cout << "(" << (*it2)[0] << "," << (*it2)[1] << ")-(" << (*it2)[2] << "," << (*it2)[3]
+                  << ")" << std::endl;
 
         ++it2;
     }
@@ -148,13 +151,15 @@ int main()
     // Display one line
     image = cv::imread("../images/road.jpg", 0);
     int n = 0;
-    cv::line(image, cv::Point(li[n][0], li[n][1]), cv::Point(li[n][2], li[n][3]), cv::Scalar(255), 5);
+    cv::line(image, cv::Point(li[n][0], li[n][1]), cv::Point(li[n][2], li[n][3]), cv::Scalar(255),
+             5);
     cv::namedWindow("One line of the Image");
     cv::imshow("One line of the Image", image);
 
     // Extract the contour pixels of the first detected line
     cv::Mat oneline(image.size(), CV_8U, cv::Scalar(0));
-    cv::line(oneline, cv::Point(li[n][0], li[n][1]), cv::Point(li[n][2], li[n][3]), cv::Scalar(255), 5);
+    cv::line(oneline, cv::Point(li[n][0], li[n][1]), cv::Point(li[n][2], li[n][3]), cv::Scalar(255),
+             5);
     cv::bitwise_and(contours, oneline, oneline);
     cv::Mat onelineInv;
     cv::threshold(oneline, onelineInv, 128, 255, cv::THRESH_BINARY_INV);
@@ -164,14 +169,17 @@ int main()
     std::vector<cv::Point> points;
 
     // Iterate over the pixels to obtain all point positions
-    for (int y = 0; y < oneline.rows; y++) {
+    for (int y = 0; y < oneline.rows; y++)
+    {
 
         uchar* rowPtr = oneline.ptr<uchar>(y);
 
-        for (int x = 0; x < oneline.cols; x++) {
+        for (int x = 0; x < oneline.cols; x++)
+        {
 
             // if on a contour
-            if (rowPtr[x]) {
+            if (rowPtr[x])
+            {
 
                 points.push_back(cv::Point(x, y));
             }
@@ -180,9 +188,10 @@ int main()
 
     // find the best fitting line
     cv::Vec4f line;
-    cv::fitLine(cv::Mat(points), line, CV_DIST_L2, 0, 0.01, 0.01);
+    cv::fitLine(cv::Mat(points), line, cv::DIST_L2, 0, 0.01, 0.01);
 
-    std::cout << "line: (" << line[0] << "," << line[1] << ")(" << line[2] << "," << line[3] << ")\n";
+    std::cout << "line: (" << line[0] << "," << line[1] << ")(" << line[2] << "," << line[3]
+              << ")\n";
 
     int x0 = line[2];
     int y0 = line[3];
@@ -209,12 +218,13 @@ int main()
     int x = 50, y = 30;
 
     // loop over all angles
-    for (int i = 0; i < 180; i++) {
+    for (int i = 0; i < 180; i++)
+    {
 
-        double theta = i*PI / 180.;
+        double theta = i * PI / 180.;
 
-        // find corresponding rho value 
-        double rho = x*cos(theta) + y*sin(theta);
+        // find corresponding rho value
+        double rho = x * cos(theta) + y * sin(theta);
         int j = static_cast<int>(rho + 100.5);
 
         std::cout << i << "," << j << std::endl;
@@ -229,10 +239,11 @@ int main()
     x = 30, y = 10;
 
     // loop over all angles
-    for (int i = 0; i < 180; i++) {
+    for (int i = 0; i < 180; i++)
+    {
 
-        double theta = i*PI / 180.;
-        double rho = x*cos(theta) + y*sin(theta);
+        double theta = i * PI / 180.;
+        double rho = x * cos(theta) + y * sin(theta);
         int j = static_cast<int>(rho + 100.5);
 
         acc.at<uchar>(j, i)++;
@@ -246,12 +257,12 @@ int main()
     image = cv::imread("../images/chariot.jpg", 0);
     cv::GaussianBlur(image, image, cv::Size(5, 5), 1.5);
     std::vector<cv::Vec3f> circles;
-    cv::HoughCircles(image, circles, CV_HOUGH_GRADIENT,
-        2,   // accumulator resolution (size of the image / 2) 
-        50,  // minimum distance between two circles
-        200, // Canny high threshold 
-        100, // minimum number of votes 
-        25, 100); // min and max radius
+    cv::HoughCircles(image, circles, cv::HOUGH_GRADIENT,
+                     2,        // accumulator resolution (size of the image / 2)
+                     50,       // minimum distance between two circles
+                     200,      // Canny high threshold
+                     100,      // minimum number of votes
+                     25, 100); // min and max radius
 
     std::cout << "Circles: " << circles.size() << std::endl;
 
@@ -259,13 +270,13 @@ int main()
     image = cv::imread("../images/chariot.jpg", 0);
     auto itc = circles.begin();
 
-    while (itc != circles.end()) {
+    while (itc != circles.end())
+    {
 
-        cv::circle(image,
-            cv::Point((*itc)[0], (*itc)[1]), // circle centre
-            (*itc)[2], // circle radius
-            cv::Scalar(255), // color 
-            2); // thickness
+        cv::circle(image, cv::Point((*itc)[0], (*itc)[1]), // circle centre
+                   (*itc)[2],                              // circle radius
+                   cv::Scalar(255),                        // color
+                   2);                                     // thickness
 
         ++itc;
     }

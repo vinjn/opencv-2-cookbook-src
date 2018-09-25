@@ -16,10 +16,10 @@
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <vector>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 int main()
 {
@@ -34,14 +34,15 @@ int main()
     // Get the contours of the connected components
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(image,
-        contours, // a vector of contours 
-        CV_RETR_EXTERNAL, // retrieve the external contours
-        CV_CHAIN_APPROX_NONE); // retrieve all pixels of each contours
+                     contours,              // a vector of contours
+                     cv::RETR_EXTERNAL,      // retrieve the external contours
+                     cv::CHAIN_APPROX_NONE); // retrieve all pixels of each contours
 
     // Print contours' length
     std::cout << "Contours: " << contours.size() << std::endl;
     auto itContours = contours.begin();
-    for (; itContours != contours.end(); ++itContours) {
+    for (; itContours != contours.end(); ++itContours)
+    {
 
         std::cout << "Size: " << itContours->size() << std::endl;
     }
@@ -49,9 +50,9 @@ int main()
     // draw black contours on white image
     cv::Mat result(image.size(), CV_8U, cv::Scalar(255));
     cv::drawContours(result, contours,
-        -1, // draw all contours
-        cv::Scalar(0), // in black
-        2); // with a thickness of 2
+                     -1,            // draw all contours
+                     cv::Scalar(0), // in black
+                     2);            // with a thickness of 2
 
     cv::namedWindow("Contours");
     cv::imshow("Contours", result);
@@ -60,7 +61,8 @@ int main()
     int cmin = 100;  // minimum contour length
     int cmax = 1000; // maximum contour length
     auto itc = contours.begin();
-    while (itc != contours.end()) {
+    while (itc != contours.end())
+    {
 
         if (itc->size() < cmin || itc->size() > cmax)
             itc = contours.erase(itc);
@@ -71,9 +73,9 @@ int main()
     // draw contours on the original image
     cv::Mat original = cv::imread("../images/group.jpg");
     cv::drawContours(original, contours,
-        -1, // draw all contours
-        cv::Scalar(255, 255, 255), // in white
-        2); // with a thickness of 2
+                     -1,                        // draw all contours
+                     cv::Scalar(255, 255, 255), // in white
+                     2);                        // with a thickness of 2
 
     cv::namedWindow("Contours on Animals");
     cv::imshow("Contours on Animals", original);
@@ -81,16 +83,16 @@ int main()
     // Let's now draw black contours on white image
     result.setTo(cv::Scalar(255));
     cv::drawContours(result, contours,
-        -1, // draw all contours
-        cv::Scalar(0), // in black
-        1); // with a thickness of 1
+                     -1,            // draw all contours
+                     cv::Scalar(0), // in black
+                     1);            // with a thickness of 1
     image = cv::imread("../images/binaryGroup.bmp", 0);
 
-    // testing the bounding box 
+    // testing the bounding box
     cv::Rect r0 = cv::boundingRect(cv::Mat(contours[0]));
     cv::rectangle(result, r0, cv::Scalar(0), 2);
 
-    // testing the enclosing circle 
+    // testing the enclosing circle
     float radius;
     cv::Point2f center;
     cv::minEnclosingCircle(cv::Mat(contours[1]), center, radius);
@@ -99,7 +101,7 @@ int main()
     //	cv::RotatedRect rrect= cv::fitEllipse(cv::Mat(contours[1]));
     //	cv::ellipse(result,rrect,cv::Scalar(0),2);
 
-        // testing the approximate polygon
+    // testing the approximate polygon
     std::vector<cv::Point> poly;
     cv::approxPolyDP(cv::Mat(contours[2]), poly, 5, true);
 
@@ -107,7 +109,8 @@ int main()
 
     // Iterate over each segment and draw it
     auto itp = poly.begin();
-    while (itp != (poly.end() - 1)) {
+    while (itp != (poly.end() - 1))
+    {
         cv::line(result, *itp, *(itp + 1), cv::Scalar(0), 2);
         ++itp;
     }
@@ -120,7 +123,8 @@ int main()
 
     // Iterate over each segment and draw it
     auto it = hull.begin();
-    while (it != (hull.end() - 1)) {
+    while (it != (hull.end() - 1))
+    {
         cv::line(result, *it, *(it + 1), cv::Scalar(0), 2);
         ++it;
     }
@@ -131,16 +135,17 @@ int main()
 
     // iterate over all contours
     itc = contours.begin();
-    while (itc != contours.end()) {
+    while (itc != contours.end())
+    {
 
         // compute all moments
         cv::Moments mom = cv::moments(cv::Mat(*itc++));
 
         // draw mass center
         cv::circle(result,
-            // position of mass center converted to integer
-            cv::Point(mom.m10 / mom.m00, mom.m01 / mom.m00),
-            2, cv::Scalar(0), 2); // draw black dot
+                   // position of mass center converted to integer
+                   cv::Point(mom.m10 / mom.m00, mom.m01 / mom.m00), 2, cv::Scalar(0),
+                   2); // draw black dot
     }
 
     cv::namedWindow("Some Shape descriptors");
@@ -151,16 +156,16 @@ int main()
 
     // Get the contours of the connected components
     cv::findContours(image,
-        contours, // a vector of contours 
-        CV_RETR_LIST, // retrieve the external and internal contours
-        CV_CHAIN_APPROX_NONE); // retrieve all pixels of each contours
+                     contours,              // a vector of contours
+                     cv::RETR_LIST,          // retrieve the external and internal contours
+                     cv::CHAIN_APPROX_NONE); // retrieve all pixels of each contours
 
     // draw black contours on white image
     result.setTo(cv::Scalar(255));
     cv::drawContours(result, contours,
-        -1, // draw all contours
-        cv::Scalar(0), // in black
-        2); // with a thickness of 2
+                     -1,            // draw all contours
+                     cv::Scalar(0), // in black
+                     2);            // with a thickness of 2
     cv::namedWindow("All Contours");
     cv::imshow("All Contours", result);
 

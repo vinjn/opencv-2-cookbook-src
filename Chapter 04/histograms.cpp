@@ -18,8 +18,8 @@
 #include <iostream>
 using namespace std;
 
-#include <opencv2/opencv.hpp>
 #include "histogram.h"
+#include <opencv2/opencv.hpp>
 
 int main()
 {
@@ -78,10 +78,11 @@ int main()
     cv::imshow("Stretched Histogram", h.getHistogramImage(str));
 
     // Create an image inversion table
-    int dims[1] = { 256 };
+    int dims[1] = {256};
     cv::MatND lookup(1, dims, CV_8U);
 
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; i++)
+    {
         lookup.at<uchar>(i) = 255 - i;
     }
 
@@ -92,4 +93,3 @@ int main()
     cv::waitKey();
     return 0;
 }
-

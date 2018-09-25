@@ -16,12 +16,12 @@
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/features2d.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <vector>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
 
 int main()
 {
@@ -41,7 +41,7 @@ int main()
     std::vector<cv::KeyPoint> keypoints1;
     std::vector<cv::KeyPoint> keypoints2;
 
-    // Construction of the SURF feature detector 
+    // Construction of the SURF feature detector
     auto surf = cv::ORB::create();
 
     // Detection of the SURF features
@@ -53,22 +53,24 @@ int main()
 
     // Draw the kepoints
     cv::Mat imageKP;
-    cv::drawKeypoints(image1, keypoints1, imageKP, cv::Scalar(255, 255, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::drawKeypoints(image1, keypoints1, imageKP, cv::Scalar(255, 255, 255),
+                      cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     cv::namedWindow("Right SURF Features");
     cv::imshow("Right SURF Features", imageKP);
-    cv::drawKeypoints(image2, keypoints2, imageKP, cv::Scalar(255, 255, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::drawKeypoints(image2, keypoints2, imageKP, cv::Scalar(255, 255, 255),
+                      cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     cv::namedWindow("Left SURF Features");
     cv::imshow("Left SURF Features", imageKP);
-
 
     // Extraction of the SURF descriptors
     cv::Mat descriptors1, descriptors2;
     surf->compute(image1, keypoints1, descriptors1);
     surf->compute(image2, keypoints2, descriptors2);
 
-    std::cout << "descriptor matrix size: " << descriptors1.rows << " by " << descriptors1.cols << std::endl;
+    std::cout << "descriptor matrix size: " << descriptors1.rows << " by " << descriptors1.cols
+              << std::endl;
 
-    // Construction of the matcher 
+    // Construction of the matcher
     auto matcher = cv::BFMatcher::create();
 
     // Match the two image descriptors
@@ -77,18 +79,15 @@ int main()
 
     std::cout << "Number of matched points: " << matches.size() << std::endl;
 
-    // Select few Matches  
+    // Select few Matches
     std::vector<cv::DMatch> selMatches;
     /*
     keypoints1.push_back(cv::KeyPoint(342.,615.,2));
     keypoints2.push_back(cv::KeyPoint(410.,600.,2));
-    selMatches.push_back(cv::DMatch(keypoints1.size()-1,keypoints2.size()-1,0)); // street light bulb
-    selMatches.push_back(matches[6]);  // right tower
-    selMatches.push_back(matches[60]);  // left bottom window
-    selMatches.push_back(matches[139]);
-    selMatches.push_back(matches[141]);  // middle window
-    selMatches.push_back(matches[213]);
-    selMatches.push_back(matches[273]);
+    selMatches.push_back(cv::DMatch(keypoints1.size()-1,keypoints2.size()-1,0)); // street light
+    bulb selMatches.push_back(matches[6]);  // right tower selMatches.push_back(matches[60]);  //
+    left bottom window selMatches.push_back(matches[139]); selMatches.push_back(matches[141]);  //
+    middle window selMatches.push_back(matches[213]); selMatches.push_back(matches[273]);
 
     int kk=0;
     while (kk<matches.size()) {
@@ -110,12 +109,13 @@ int main()
 
     // Draw the selected matches
     cv::Mat imageMatches;
-    cv::drawMatches(image1, keypoints1,  // 1st image and its keypoints
-        image2, keypoints2,  // 2nd image and its keypoints
-//					selMatches,			// the matches
-matches,			// the matches
-imageMatches,		// the image produced
-cv::Scalar(255, 255, 255)); // color of the lines
+    cv::drawMatches(
+        image1, keypoints1, // 1st image and its keypoints
+        image2, keypoints2, // 2nd image and its keypoints
+        //					selMatches,			// the matches
+        matches,                    // the matches
+        imageMatches,               // the image produced
+        cv::Scalar(255, 255, 255)); // color of the lines
     cv::namedWindow("Matches");
     cv::imshow("Matches", imageMatches);
 
@@ -123,8 +123,8 @@ cv::Scalar(255, 255, 255)); // color of the lines
     // 2 vectors of Point2f
     std::vector<int> pointIndexes1;
     std::vector<int> pointIndexes2;
-    for (auto it = selMatches.begin();
-        it != selMatches.end(); ++it) {
+    for (auto it = selMatches.begin(); it != selMatches.end(); ++it)
+    {
 
         // Get the indexes of the selected matched keypoints
         pointIndexes1.push_back(it->queryIdx);
@@ -136,9 +136,10 @@ cv::Scalar(255, 255, 255)); // color of the lines
     cv::KeyPoint::convert(keypoints1, selPoints1, pointIndexes1);
     cv::KeyPoint::convert(keypoints2, selPoints2, pointIndexes2);
 
-    // check by drawing the points 
+    // check by drawing the points
     auto it = selPoints1.begin();
-    while (it != selPoints1.end()) {
+    while (it != selPoints1.end())
+    {
 
         // draw a circle at each corner location
         cv::circle(image1, *it, 3, cv::Scalar(255, 255, 255), 2);
@@ -146,7 +147,8 @@ cv::Scalar(255, 255, 255)); // color of the lines
     }
 
     it = selPoints2.begin();
-    while (it != selPoints2.end()) {
+    while (it != selPoints2.end())
+    {
 
         // draw a circle at each corner location
         cv::circle(image2, *it, 3, cv::Scalar(255, 255, 255), 2);
@@ -154,41 +156,39 @@ cv::Scalar(255, 255, 255)); // color of the lines
     }
 
     // Compute F matrix from 7 matches
-    cv::Mat fundemental = cv::findFundamentalMat(
-        cv::Mat(selPoints1), // points in first image
-        cv::Mat(selPoints2), // points in second image
-        CV_FM_7POINT);       // 7-point method
+    cv::Mat fundemental = cv::findFundamentalMat(cv::Mat(selPoints1), // points in first image
+                                                 cv::Mat(selPoints2), // points in second image
+                                                 cv::FM_7POINT);       // 7-point method
 
     std::cout << "F-Matrix size= " << fundemental.rows << "," << fundemental.cols << std::endl;
 
-    // draw the left points corresponding epipolar lines in right image 
+    // draw the left points corresponding epipolar lines in right image
     std::vector<cv::Vec3f> lines1;
-    cv::computeCorrespondEpilines(
-        cv::Mat(selPoints1), // image points 
-        1,                   // in image 1 (can also be 2)
-        fundemental, // F matrix
-        lines1);     // vector of epipolar lines
+    cv::computeCorrespondEpilines(cv::Mat(selPoints1), // image points
+                                  1,                   // in image 1 (can also be 2)
+                                  fundemental,         // F matrix
+                                  lines1);             // vector of epipolar lines
 
     // for all epipolar lines
-    for (auto it = lines1.begin();
-        it != lines1.end(); ++it) {
+    for (auto it = lines1.begin(); it != lines1.end(); ++it)
+    {
 
         // draw the epipolar line between first and last column
         cv::line(image2, cv::Point(0, -(*it)[2] / (*it)[1]),
-            cv::Point(image2.cols, -((*it)[2] + (*it)[0] * image2.cols) / (*it)[1]),
-            cv::Scalar(255, 255, 255));
+                 cv::Point(image2.cols, -((*it)[2] + (*it)[0] * image2.cols) / (*it)[1]),
+                 cv::Scalar(255, 255, 255));
     }
 
-    // draw the left points corresponding epipolar lines in left image 
+    // draw the left points corresponding epipolar lines in left image
     std::vector<cv::Vec3f> lines2;
     cv::computeCorrespondEpilines(cv::Mat(selPoints2), 2, fundemental, lines2);
-    for (auto it = lines2.begin();
-        it != lines2.end(); ++it) {
+    for (auto it = lines2.begin(); it != lines2.end(); ++it)
+    {
 
         // draw the epipolar line between first and last column
         cv::line(image1, cv::Point(0, -(*it)[2] / (*it)[1]),
-            cv::Point(image1.cols, -((*it)[2] + (*it)[0] * image1.cols) / (*it)[1]),
-            cv::Scalar(255, 255, 255));
+                 cv::Point(image1.cols, -((*it)[2] + (*it)[0] * image1.cols) / (*it)[1]),
+                 cv::Scalar(255, 255, 255));
     }
 
     // Display the images with points and epipolar lines
@@ -204,10 +204,10 @@ cv::Scalar(255, 255, 255)); // color of the lines
     // remove all elements after the
     matches.erase(matches.begin()+matches.size()/2, matches.end());
 */
-// Convert keypoints into Point2f
+    // Convert keypoints into Point2f
     std::vector<cv::Point2f> points1, points2;
-    for (auto it = matches.begin();
-        it != matches.end(); ++it) {
+    for (auto it = matches.begin(); it != matches.end(); ++it)
+    {
 
         // Get the position of left keypoints
         float x = keypoints1[it->queryIdx].pt.x;
@@ -223,12 +223,11 @@ cv::Scalar(255, 255, 255)); // color of the lines
 
     // Compute F matrix using RANSAC
     std::vector<uchar> inliers(points1.size(), 0);
-    fundemental = cv::findFundamentalMat(
-        cv::Mat(points1), cv::Mat(points2), // matching points
-        inliers,      // match status (inlier ou outlier)  
-        CV_FM_RANSAC, // RANSAC method
-        1,            // distance to epipolar line
-        0.98);        // confidence probability
+    fundemental = cv::findFundamentalMat(cv::Mat(points1), cv::Mat(points2), // matching points
+                                         inliers,      // match status (inlier ou outlier)
+                                         cv::FM_RANSAC, // RANSAC method
+                                         1,            // distance to epipolar line
+                                         0.98);        // confidence probability
 
     // Read input images
     image1 = cv::imread("../images/church01.jpg", 0);
@@ -236,31 +235,33 @@ cv::Scalar(255, 255, 255)); // color of the lines
 
     // Draw the epipolar line of few points
     cv::computeCorrespondEpilines(cv::Mat(selPoints1), 1, fundemental, lines1);
-    for (auto it = lines1.begin();
-        it != lines1.end(); ++it) {
+    for (auto it = lines1.begin(); it != lines1.end(); ++it)
+    {
 
         cv::line(image2, cv::Point(0, -(*it)[2] / (*it)[1]),
-            cv::Point(image2.cols, -((*it)[2] + (*it)[0] * image2.cols) / (*it)[1]),
-            cv::Scalar(255, 255, 255));
+                 cv::Point(image2.cols, -((*it)[2] + (*it)[0] * image2.cols) / (*it)[1]),
+                 cv::Scalar(255, 255, 255));
     }
 
     cv::computeCorrespondEpilines(cv::Mat(selPoints2), 2, fundemental, lines2);
-    for (auto it = lines2.begin();
-        it != lines2.end(); ++it) {
+    for (auto it = lines2.begin(); it != lines2.end(); ++it)
+    {
 
         cv::line(image1, cv::Point(0, -(*it)[2] / (*it)[1]),
-            cv::Point(image1.cols, -((*it)[2] + (*it)[0] * image1.cols) / (*it)[1]),
-            cv::Scalar(255, 255, 255));
+                 cv::Point(image1.cols, -((*it)[2] + (*it)[0] * image1.cols) / (*it)[1]),
+                 cv::Scalar(255, 255, 255));
     }
 
     // Draw the inlier points
     std::vector<cv::Point2f> points1In, points2In;
     auto itPts = points1.begin();
     auto itIn = inliers.begin();
-    while (itPts != points1.end()) {
+    while (itPts != points1.end())
+    {
 
         // draw a circle at each inlier location
-        if (*itIn) {
+        if (*itIn)
+        {
             cv::circle(image1, *itPts, 3, cv::Scalar(255, 255, 255), 2);
             points1In.push_back(*itPts);
         }
@@ -270,10 +271,12 @@ cv::Scalar(255, 255, 255)); // color of the lines
 
     itPts = points2.begin();
     itIn = inliers.begin();
-    while (itPts != points2.end()) {
+    while (itPts != points2.end())
+    {
 
         // draw a circle at each inlier location
-        if (*itIn) {
+        if (*itIn)
+        {
             cv::circle(image2, *itPts, 3, cv::Scalar(255, 255, 255), 2);
             points2In.push_back(*itPts);
         }
@@ -287,7 +290,7 @@ cv::Scalar(255, 255, 255)); // color of the lines
     cv::namedWindow("Left Image Epilines (RANSAC)");
     cv::imshow("Left Image Epilines (RANSAC)", image2);
 
-    cv::findHomography(cv::Mat(points1In), cv::Mat(points2In), inliers, CV_RANSAC, 1.);
+    cv::findHomography(cv::Mat(points1In), cv::Mat(points2In), inliers, cv::RANSAC, 1.);
 
     // Read input images
     image1 = cv::imread("../images/church01.jpg", 0);
@@ -296,7 +299,8 @@ cv::Scalar(255, 255, 255)); // color of the lines
     // Draw the inlier points
     itPts = points1In.begin();
     itIn = inliers.begin();
-    while (itPts != points1In.end()) {
+    while (itPts != points1In.end())
+    {
 
         // draw a circle at each inlier location
         if (*itIn)
@@ -308,7 +312,8 @@ cv::Scalar(255, 255, 255)); // color of the lines
 
     itPts = points2In.begin();
     itIn = inliers.begin();
-    while (itPts != points2In.end()) {
+    while (itPts != points2In.end())
+    {
 
         // draw a circle at each inlier location
         if (*itIn)

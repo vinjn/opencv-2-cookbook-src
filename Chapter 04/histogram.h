@@ -4,189 +4,185 @@
 #include <opencv2\core\core.hpp>
 #include <opencv2\imgproc\imgproc.hpp>
 
-class Histogram1D {
+class Histogram1D
+{
 
   private:
-
     int histSize[1];
-	float hranges[2];
+    float hranges[2];
     const float* ranges[1];
     int channels[1];
 
   public:
+    Histogram1D()
+    {
 
-	Histogram1D() {
+        // Prepare arguments for 1D histogram
+        histSize[0] = 256;
+        hranges[0] = 0.0;
+        hranges[1] = 255.0;
+        ranges[0] = hranges;
+        channels[0] = 0; // by default, we look at channel 0
+    }
 
-		// Prepare arguments for 1D histogram
-		histSize[0]= 256;
-		hranges[0]= 0.0;
-		hranges[1]= 255.0;
-		ranges[0]= hranges; 
-		channels[0]= 0; // by default, we look at channel 0
-	}
+    // Sets the channel on which histogram will be calculated.
+    // By default it is channel 0.
+    void setChannel(int c) { channels[0] = c; }
 
-	// Sets the channel on which histogram will be calculated.
-	// By default it is channel 0.
-	void setChannel(int c) {
+    // Gets the channel used.
+    int getChannel() { return channels[0]; }
 
-		channels[0]= c;
-	}
+    // Sets the range for the pixel values.
+    // By default it is [0,255]
+    void setRange(float minValue, float maxValue)
+    {
 
-	// Gets the channel used.
-	int getChannel() {
+        hranges[0] = minValue;
+        hranges[1] = maxValue;
+    }
 
-		return channels[0];
-	}
+    // Gets the min pixel value.
+    float getMinValue() { return hranges[0]; }
 
-	// Sets the range for the pixel values.
-	// By default it is [0,255]
-	void setRange(float minValue, float maxValue) {
+    // Gets the max pixel value.
+    float getMaxValue() { return hranges[1]; }
 
-		hranges[0]= minValue;
-		hranges[1]= maxValue;
-	}
+    // Sets the number of bins in histogram.
+    // By default it is 256.
+    void setNBins(int nbins) { histSize[0] = nbins; }
 
-	// Gets the min pixel value.
-	float getMinValue() {
+    // Gets the number of bins in histogram.
+    int getNBins() { return histSize[0]; }
 
-		return hranges[0];
-	}
+    // Computes the 1D histogram.
+    cv::MatND getHistogram(const cv::Mat& image)
+    {
 
-	// Gets the max pixel value.
-	float getMaxValue() {
+        cv::MatND hist;
 
-		return hranges[1];
-	}
+        // Compute histogram
+        cv::calcHist(&image,
+                     1,         // histogram of 1 image only
+                     channels,  // the channel used
+                     cv::Mat(), // no mask is used
+                     hist,      // the resulting histogram
+                     1,         // it is a 1D histogram
+                     histSize,  // number of bins
+                     ranges     // pixel value range
+        );
 
-	// Sets the number of bins in histogram.
-	// By default it is 256.
-	void setNBins(int nbins) {
+        return hist;
+    }
 
-		histSize[0]= nbins;
-	}
+    // Computes the 1D histogram and returns an image of it.
+    cv::Mat getHistogramImage(const cv::Mat& image)
+    {
 
-	// Gets the number of bins in histogram.
-	int getNBins() {
+        // Compute histogram first
+        cv::MatND hist = getHistogram(image);
 
-		return histSize[0];
-	}
+        // Get min and max bin values
+        double maxVal = 0;
+        double minVal = 0;
+        cv::minMaxLoc(hist, &minVal, &maxVal, 0, 0);
 
-	// Computes the 1D histogram.
-	cv::MatND getHistogram(const cv::Mat &image) {
+        // Image on which to display histogram
+        cv::Mat histImg(histSize[0], histSize[0], CV_8U, cv::Scalar(255));
 
-		cv::MatND hist;
+        // set highest point at 90% of nbins
+        int hpt = static_cast<int>(0.9 * histSize[0]);
 
-		// Compute histogram
-		cv::calcHist(&image, 
-			1,			// histogram of 1 image only
-			channels,	// the channel used
-			cv::Mat(),	// no mask is used
-			hist,		// the resulting histogram
-			1,			// it is a 1D histogram
-			histSize,	// number of bins
-			ranges		// pixel value range
-		);
+        // Draw vertical line for each bin
+        for (int h = 0; h < histSize[0]; h++)
+        {
 
-		return hist;
-	}
+            float binVal = hist.at<float>(h);
+            int intensity = static_cast<int>(binVal * hpt / maxVal);
+            cv::line(histImg, cv::Point(h, histSize[0]), cv::Point(h, histSize[0] - intensity),
+                     cv::Scalar::all(0));
+        }
 
-	// Computes the 1D histogram and returns an image of it.
-	cv::Mat getHistogramImage(const cv::Mat &image){
+        return histImg;
+    }
 
-		// Compute histogram first
-		cv::MatND hist= getHistogram(image);
+    // Equalizes the source image.
+    cv::Mat equalize(const cv::Mat& image)
+    {
 
-		// Get min and max bin values
-		double maxVal=0;
-		double minVal=0;
-		cv::minMaxLoc(hist, &minVal, &maxVal, 0, 0);
+        cv::Mat result;
+        cv::equalizeHist(image, result);
 
-		// Image on which to display histogram
-		cv::Mat histImg(histSize[0], histSize[0], CV_8U,cv::Scalar(255));
+        return result;
+    }
 
-		// set highest point at 90% of nbins
-		int hpt = static_cast<int>(0.9*histSize[0]);
+    // Stretches the source image.
+    cv::Mat stretch(const cv::Mat& image, int minValue = 0)
+    {
 
-		// Draw vertical line for each bin 
-		for( int h = 0; h < histSize[0]; h++ ) {
+        // Compute histogram first
+        cv::MatND hist = getHistogram(image);
 
-			float binVal = hist.at<float>(h);
-			int intensity = static_cast<int>(binVal*hpt/maxVal);
-			cv::line(histImg,cv::Point(h,histSize[0]),cv::Point(h,histSize[0]-intensity),cv::Scalar::all(0));
-		}
+        // find left extremity of the histogram
+        int imin = 0;
+        for (; imin < histSize[0]; imin++)
+        {
+            std::cout << hist.at<float>(imin) << std::endl;
+            if (hist.at<float>(imin) > minValue)
+                break;
+        }
 
-		return histImg;
-	}
+        // find right extremity of the histogram
+        int imax = histSize[0] - 1;
+        for (; imax >= 0; imax--)
+        {
 
-	// Equalizes the source image.
-	cv::Mat equalize(const cv::Mat &image) {
+            if (hist.at<float>(imax) > minValue)
+                break;
+        }
 
-		cv::Mat result;
-		cv::equalizeHist(image,result);
+        // Create lookup table
+        int dims[1] = {256};
+        cv::MatND lookup(1, dims, CV_8U);
 
-		return result;
-	}
+        for (int i = 0; i < 256; i++)
+        {
 
-	// Stretches the source image.
-	cv::Mat stretch(const cv::Mat &image, int minValue=0) {
+            if (i < imin)
+                lookup.at<uchar>(i) = 0;
+            else if (i > imax)
+                lookup.at<uchar>(i) = 255;
+            else
+                lookup.at<uchar>(i) = static_cast<uchar>(255.0 * (i - imin) / (imax - imin) + 0.5);
+        }
 
-		// Compute histogram first
-		cv::MatND hist= getHistogram(image);
+        // Apply lookup table
+        cv::Mat result;
+        result = applyLookUp(image, lookup);
 
-		// find left extremity of the histogram
-		int imin= 0;
-		for( ; imin < histSize[0]; imin++ ) {
-			std::cout<<hist.at<float>(imin)<<std::endl;
-			if (hist.at<float>(imin) > minValue)
-				break;
-		}
-		
-		// find right extremity of the histogram
-		int imax= histSize[0]-1;
-		for( ; imax >= 0; imax-- ) {
+        return result;
+    }
 
-			if (hist.at<float>(imax) > minValue)
-				break;
-		}
+    // Applies a lookup table transforming an input image into a 1-channel image
+    cv::Mat applyLookUp(const cv::Mat& image, const cv::MatND& lookup)
+    {
 
-		// Create lookup table
-		int dims[1]={256};
-		cv::MatND lookup(1,dims,CV_8U);
+        // Set output image (always 1-channel)
+        cv::Mat result(image.rows, image.cols, CV_8U);
+        cv::Mat_<uchar>::iterator itr = result.begin<uchar>();
 
-		for (int i=0; i<256; i++) {
-		
-			if (i < imin) lookup.at<uchar>(i)= 0;
-			else if (i > imax) lookup.at<uchar>(i)= 255;
-			else lookup.at<uchar>(i)= static_cast<uchar>(255.0*(i-imin)/(imax-imin)+0.5);
-		}
+        // Iterates over the input image
+        cv::Mat_<uchar>::const_iterator it = image.begin<uchar>();
+        cv::Mat_<uchar>::const_iterator itend = image.end<uchar>();
 
-		// Apply lookup table
-		cv::Mat result;
-		result= applyLookUp(image,lookup);
+        // Applies lookup to each pixel
+        for (; it != itend; ++it, ++itr)
+        {
 
-		return result;
-	}
+            *itr = lookup.at<uchar>(*it);
+        }
 
-	// Applies a lookup table transforming an input image into a 1-channel image
-	cv::Mat applyLookUp(const cv::Mat& image, const cv::MatND& lookup) {
-
-		// Set output image (always 1-channel)
-		cv::Mat result(image.rows,image.cols,CV_8U);
-		cv::Mat_<uchar>::iterator itr= result.begin<uchar>();
-
-		// Iterates over the input image
-		cv::Mat_<uchar>::const_iterator it= image.begin<uchar>();
-		cv::Mat_<uchar>::const_iterator itend= image.end<uchar>();
-
-		// Applies lookup to each pixel
-		for ( ; it!= itend; ++it, ++itr) {
-
-			*itr= lookup.at<uchar>(*it);
-		}
-
-		return result;
-	}
+        return result;
+    }
 };
-
 
 #endif

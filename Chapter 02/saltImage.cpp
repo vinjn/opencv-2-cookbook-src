@@ -15,25 +15,27 @@
    Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
 \*------------------------------------------------------------------------------------------*/
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 
-void salt(cv::Mat &image, int n) {
+void salt(cv::Mat& image, int n)
+{
 
     int i, j;
-    for (int k = 0; k < n; k++) {
+    for (int k = 0; k < n; k++)
+    {
 
         // rand() is the MFC random number generator
         i = rand() % image.cols;
         j = rand() % image.rows;
 
-
-        if (image.channels() == 1) { // gray-level image
+        if (image.channels() == 1)
+        { // gray-level image
 
             image.at<uchar>(j, i) = 255;
-
         }
-        else if (image.channels() == 3) { // color image
+        else if (image.channels() == 3)
+        { // color image
 
             image.at<cv::Vec3b>(j, i)[0] = 255;
             image.at<cv::Vec3b>(j, i)[1] = 255;
@@ -59,5 +61,3 @@ int main()
 
     return 0;
 }
-
-

@@ -16,9 +16,9 @@
 \*------------------------------------------------------------------------------------------*/
 
 #include <iostream>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 int main()
 {
@@ -46,7 +46,8 @@ int main()
     auto it = gauss.begin<float>();
     auto itend = gauss.end<float>();
     std::cout << "[";
-    for (; it != itend; ++it) {
+    for (; it != itend; ++it)
+    {
         std::cout << *it << " ";
     }
     std::cout << "]" << std::endl;
@@ -58,7 +59,8 @@ int main()
     it = gauss.begin<float>();
     itend = gauss.end<float>();
     std::cout << "[";
-    for (; it != itend; ++it) {
+    for (; it != itend; ++it)
+    {
         std::cout << *it << " ";
     }
     std::cout << "]" << std::endl;
@@ -70,7 +72,8 @@ int main()
     it = gauss.begin<float>();
     itend = gauss.end<float>();
     std::cout << "[";
-    for (; it != itend; ++it) {
+    for (; it != itend; ++it)
+    {
         std::cout << *it << " ";
     }
     std::cout << "]" << std::endl;
@@ -83,7 +86,8 @@ int main()
     auto kit = kx.begin<float>();
     auto kitend = kx.end<float>();
     std::cout << "[";
-    for (; kit != kitend; ++kit) {
+    for (; kit != kitend; ++kit)
+    {
         std::cout << *kit << " ";
     }
     std::cout << "]" << std::endl;

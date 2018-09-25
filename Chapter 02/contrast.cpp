@@ -17,27 +17,31 @@
 
 #include <iostream>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
-
-void sharpen(const cv::Mat &image, cv::Mat &result) {
+void sharpen(const cv::Mat& image, cv::Mat& result)
+{
 
     result.create(image.size(), image.type()); // allocate if necessary
 
-    for (int j = 1; j < image.rows - 1; j++) { // for all rows (except first and last)
+    for (int j = 1; j < image.rows - 1; j++)
+    { // for all rows (except first and last)
 
         const uchar* previous = image.ptr<const uchar>(j - 1); // previous row
-        const uchar* current = image.ptr<const uchar>(j);	// current row
-        const uchar* next = image.ptr<const uchar>(j + 1);		// next row
+        const uchar* current = image.ptr<const uchar>(j);      // current row
+        const uchar* next = image.ptr<const uchar>(j + 1);     // next row
 
-        uchar* output = result.ptr<uchar>(j);	// output row
+        uchar* output = result.ptr<uchar>(j); // output row
 
-        for (int i = 1; i < image.cols - 1; i++) {
+        for (int i = 1; i < image.cols - 1; i++)
+        {
 
-            *output++ = cv::saturate_cast<uchar>(5 * current[i] - current[i - 1] - current[i + 1] - previous[i] - next[i]);
-            //			output[i]= cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]); 
+            *output++ = cv::saturate_cast<uchar>(5 * current[i] - current[i - 1] - current[i + 1] -
+                                                 previous[i] - next[i]);
+            //			output[i]=
+            //cv::saturate_cast<uchar>(5*current[i]-current[i-1]-current[i+1]-previous[i]-next[i]);
         }
     }
 
@@ -48,20 +52,24 @@ void sharpen(const cv::Mat &image, cv::Mat &result) {
     result.col(result.cols - 1).setTo(cv::Scalar(0));
 }
 
-void sharpen2(const cv::Mat &image, cv::Mat &result) {
+void sharpen2(const cv::Mat& image, cv::Mat& result)
+{
 
     result.create(image.size(), image.type()); // allocate if necessary
 
     int step = image.step1();
-    const uchar* previous = image.data;		// ptr to previous row
-    const uchar* current = image.data + step; // ptr to current row
-    const uchar* next = image.data + 2 * step;   // ptr to next row
-    uchar *output = result.data + step;		// ptr to output row
+    const uchar* previous = image.data;        // ptr to previous row
+    const uchar* current = image.data + step;  // ptr to current row
+    const uchar* next = image.data + 2 * step; // ptr to next row
+    uchar* output = result.data + step;        // ptr to output row
 
-    for (int j = 1; j < image.rows - 1; j++) { // for each row (except first and last)
-        for (int i = 1; i < image.cols - 1; i++) { // for each column (except first and last)
+    for (int j = 1; j < image.rows - 1; j++)
+    { // for each row (except first and last)
+        for (int i = 1; i < image.cols - 1; i++)
+        { // for each column (except first and last)
 
-            output[i] = cv::saturate_cast<uchar>(5 * current[i] - current[i - 1] - current[i + 1] - previous[i] - next[i]);
+            output[i] = cv::saturate_cast<uchar>(5 * current[i] - current[i - 1] - current[i + 1] -
+                                                 previous[i] - next[i]);
         }
 
         previous += step;
@@ -77,7 +85,8 @@ void sharpen2(const cv::Mat &image, cv::Mat &result) {
     result.col(result.cols - 1).setTo(cv::Scalar(0));
 }
 
-void sharpen3(const cv::Mat &image, cv::Mat &result) {
+void sharpen3(const cv::Mat& image, cv::Mat& result)
+{
 
     auto it = image.begin<uchar>() + image.step;
     auto itend = image.end<uchar>() - image.step;
@@ -87,13 +96,15 @@ void sharpen3(const cv::Mat &image, cv::Mat &result) {
     result.create(image.size(), image.type()); // allocate if necessary
     auto itout = result.begin<uchar>() + result.step;
 
-    for (; it != itend; ++it, ++itup, ++itdown) {
+    for (; it != itend; ++it, ++itup, ++itdown)
+    {
 
         *itout = cv::saturate_cast<uchar>(*it * 5 - *(it - 1) - *(it + 1) - *itup - *itdown);
     }
 }
 
-void sharpen2D(const cv::Mat &image, cv::Mat &result) {
+void sharpen2D(const cv::Mat& image, cv::Mat& result)
+{
 
     // Construct kernel (all entries initialized to 0)
     cv::Mat kernel(3, 3, CV_32F, cv::Scalar(0));
@@ -104,7 +115,7 @@ void sharpen2D(const cv::Mat &image, cv::Mat &result) {
     kernel.at<float>(1, 0) = -1.0;
     kernel.at<float>(1, 2) = -1.0;
 
-    //filter the image
+    // filter the image
     cv::filter2D(image, result, image.depth(), kernel);
 }
 
@@ -147,5 +158,3 @@ int main()
 
     return 0;
 }
-
-
